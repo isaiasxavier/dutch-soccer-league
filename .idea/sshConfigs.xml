@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="PASSWORD" connectionConfig="{&quot;proxyParams&quot;:{&quot;proxyHost&quot;:&quot;&quot;,&quot;proxyPort&quot;:-1,&quot;proxyType&quot;:&quot;IDE_WIDE_PROXY&quot;}}" host="db" id="6fdd92dc-35b0-4138-a0bb-3a236e8c0fbd" port="3306" nameFormat="DESCRIPTIVE" username="db" useOpenSSHConfig="true" />
+    </configs>
+  </component>
+</project>
