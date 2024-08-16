@@ -20,7 +20,6 @@ class UserFixtures extends Fixture
     {
         for ($i = 1; $i <= 5; ++$i) {
             $user = new User();
-            $user->setName('Name'.$i);
             $user->setEmail('email'.$i.'@gmail.com');
             $user->setRoles(['Role'.$i]);
 
