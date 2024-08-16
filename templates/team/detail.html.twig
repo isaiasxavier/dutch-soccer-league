@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mx-auto p-4 space-y-8">
+        <!-- Primeiro Bloco -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h1 class="text-3xl font-bold mb-4">{{ team.name }}</h1>
+            <p><strong>Founded:</strong> {{ team.founded }}</p>
+            <p><strong>Address:</strong> {{ team.address }}</p>
+            <p><strong>Website:</strong> <a href="{{ team.website }}" target="_blank"
+                                            class="text-blue-500 hover:underline">{{ team.website }}</a></p>
+            <p><strong>Club Colors:</strong> {{ team.clubColors }}</p>
+            <p><strong>Venue:</strong> {{ team.venue }}</p>
+        </div>
+
+        <!-- Grid para SQUAD e Matches -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Segundo Bloco -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-2">Coach</h2>
+                <p class="mb-4">{{ team.coach.name }} ({{ team.coach.nationality }})</p>
+
+                <h2 class="text-2xl font-semibold mb-2">Squad</h2>
+                <ul class="list-disc list-inside mb-4">
+                    {% for player in team.squad %}
+                        <li>{{ player.name }} - {{ player.position }} ({{ player.nationality }})</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Terceiro Bloco -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-2">Matches</h2>
+                <ul class="list-disc list-inside mb-4">
+                    {% for match in matches %}
+                        <li>{{ match.homeTeam.name }} vs {{ match.awayTeam.name }} - {{ match.utcDate }}</li>
+                    {% endfor %}
+                </ul>
+                <div class="mt-4 flex justify-center space-x-4">
+                    {% if offset > 0 %}
+                        <a href="{{ path('app_team_detail', {id: team.id, limit: limit, offset: offset - limit}) }}"
+                           class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">
+                            Previous
+                        </a>
+                    {% endif %}
+                    <a href="{{ path('app_team_detail', {id: team.id, limit: limit, offset: offset + limit}) }}"
+                       class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">
+                        Next
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

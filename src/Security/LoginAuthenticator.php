@@ -2,7 +2,6 @@
 
 namespace App\Security;
 
-use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,7 +30,7 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
         $email = $request->get('email');
 
         if (!$email) {
-            throw new InvalidArgumentException('Email cannot be null.');
+            throw new \InvalidArgumentException('Email cannot be null.');
         }
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);

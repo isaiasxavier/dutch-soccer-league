@@ -1,4 +1,3 @@
-<!-- Atualize seu template base.html.twig -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,12 +16,25 @@
     {% block navbar %}
         <nav class="bg-gray-800 text-white p-4">
             <ul class="flex justify-end space-x-4">
-                <li><a href="/" class="hover:underline">Home</a></li>
+                <li>
+                    {% if app.user %}
+                        <a href="{{ path('app_homepage') }}" class="hover:underline" @click="isOpen = false">
+                            Home
+                        </a>
+                    {% endif %}
+                </li>
                 <li>
                     <a href="{{ app.user ? 'logout' : 'login' }}" class="hover:underline"
                        @click="isOpen = false">
                         {{ app.user ? 'Logout' : 'Login' }}
                     </a>
+                </li>
+                <li>
+                    {% if not app.user %}
+                        <a href="{{ path('app_register') }}" class="hover:underline" @click="isOpen = false">
+                            Register
+                        </a>
+                    {% endif %}
                 </li>
             </ul>
         </nav>
