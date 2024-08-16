@@ -15,7 +15,6 @@ class TeamController extends AbstractController
     public function __construct(ApiService $apiService)
     {
         $this->apiService = $apiService;
-       
     }
 
     /*#[Route('/teams', name: 'app_teams')]
@@ -56,7 +55,7 @@ class TeamController extends AbstractController
         $limit = $request->query->getInt('limit', 10);
         $offset = $request->query->getInt('offset', 0);
         $teams = $this->apiService->getTeams($limit, $offset);
-        
+
         return $this->render('homepage/index.html.twig', [
             'teams' => $teams,
             'limit' => $limit,

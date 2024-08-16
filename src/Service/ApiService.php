@@ -13,7 +13,6 @@ class ApiService
     public function __construct(HttpClientInterface $client)
     {
         $this->client = $client;
-       
     }
 
     public function getTeams(int $limit = 10, int $offset = 0): array
@@ -22,14 +21,10 @@ class ApiService
             'headers' => [
                 'X-Auth-Token' => $this->authToken,
             ],
-            'query' => [
-                'limit' => $limit,
-                'offset' => $offset,
-            ],
         ]);
-        
+
         $data = $response->toArray();
-        
+
         return $data['teams'];
     }
 
@@ -40,10 +35,10 @@ class ApiService
                 'X-Auth-Token' => $this->authToken,
             ],
         ]);
-        
+
         return $response->toArray();
     }
-    
+
     public function getMatchesByTeam($teamId, int $limit = 10, int $offset = 0): array
     {
         $response = $this->client->request('GET', $this->apiUrl.'/teams/'.$teamId.'/matches', [

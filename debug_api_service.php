@@ -10,7 +10,7 @@ $logger = new NullLogger();
 $client = HttpClient::create();
 $apiService = new ApiService($client, $logger);
 
-    try {
+try {
     $teams = $apiService->getTeams();
     print_r($teams); // Add semicolon
 
