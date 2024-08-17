@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\CoachRepository;
-use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -11,7 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Coach
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -25,14 +23,14 @@ class Coach
     private ?string $name = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?DateTimeInterface $date = null;
+    private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(length: 255)]
     private ?string $nationality = null;
 
     #[ORM\Column(length: 255)]
     private ?string $contractStart = null;
-    
+
     #[ORM\Column(length: 255)]
     private ?string $contractUntil = null;
 
@@ -44,25 +42,31 @@ class Coach
     {
         return $this->id;
     }
+    
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
 
     public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    public function setFirstNameCoach(string $firstName): static
+    public function setFirstName(string $firstName): static
     {
         $this->firstName = $firstName;
 
         return $this;
     }
 
-    public function getLastname(): ?string
+    public function getLastName(): ?string
     {
         return $this->lastname;
     }
 
-    public function setLastnameCoach(string $lastname): static
+    public function setLastName(string $lastname): static
     {
         $this->lastname = $lastname;
 
@@ -81,12 +85,12 @@ class Coach
         return $this;
     }
 
-    public function getDate(): ?DateTimeInterface
+    public function getDate(): ?\DateTimeInterface
     {
         return $this->date;
     }
 
-    public function setDate(DateTimeInterface $date): static
+    public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
 
@@ -116,19 +120,19 @@ class Coach
 
         return $this;
     }
-    
+
     public function getContractUntil(): ?string
     {
         return $this->contractUntil;
     }
-    
+
     public function setContractUntil(string $contractUntil): static
     {
         $this->contractUntil = $contractUntil;
-        
+
         return $this;
     }
-    
+
     public function getTeam(): ?Team
     {
         return $this->team;

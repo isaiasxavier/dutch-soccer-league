@@ -10,10 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
 class Player
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    
+
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
@@ -25,7 +24,7 @@ class Player
 
     #[ORM\Column(length: 255)]
     private ?string $nationality = null;
-    
+
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Team $team = null;
@@ -33,6 +32,12 @@ class Player
     public function getId(): ?int
     {
         return $this->id;
+    }
+    
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
     }
     
     public function getName(): ?string
@@ -82,7 +87,7 @@ class Player
 
         return $this;
     }
-    
+
     public function getTeam(): ?Team
     {
         return $this->team;

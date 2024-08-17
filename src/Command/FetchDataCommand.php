@@ -5,7 +5,6 @@ namespace App\Command;
 use App\Entity\Coach;
 use App\Entity\Player;
 use App\Entity\RunningCompetition;
-use App\Entity\Staff;
 use App\Entity\Team;
 use App\Service\ApiService;
 use DateTime;
@@ -22,9 +21,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class FetchDataCommand extends Command
 {
-    protected static $defaultName = 'app:fetch-data';
     private $apiService;
     private $entityManager;
+
     public function __construct(ApiService $apiService, EntityManagerInterface $entityManager)
     {
         parent::__construct();
@@ -40,18 +39,19 @@ class FetchDataCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        
-        $this->fetchAndSaveTeams($io);
-        
+
+        $this->fetchAndSaveData($io);
+
         return Command::SUCCESS;
     }
     
-    private function fetchAndSaveTeams(SymfonyStyle $io): void
+    private function fetchAndSaveData(SymfonyStyle $io): void
     {
         $teams = $this->apiService->getTeams();
         
         foreach ($teams as $teamData) {
-            $team = new Team();
+            $team = $this->entityManager->find(Team::class, $teamData['id']) ?? new Team();
+            $team->setId($teamData['id']);
             $team->setName($teamData['name']);
             $team->setShortName($teamData['shortName']);
             $team->setTla($teamData['tla']);
@@ -63,9 +63,9 @@ class FetchDataCommand extends Command
             $team->setVenue($teamData['venue']);
             $team->setLastUpdated(new DateTime($teamData['lastUpdated']));
             
-            // Map RunningCompetitions
             foreach ($teamData['runningCompetitions'] as $competitionData) {
-                $competition = new RunningCompetition();
+                $competition = $this->entityManager->find(RunningCompetition::class, $competitionData['id']) ?? new RunningCompetition();
+                $competition->setId($competitionData['id']);
                 $competition->setName($competitionData['name']);
                 $competition->setCode($competitionData['code']);
                 $competition->setType($competitionData['type']);
@@ -74,11 +74,11 @@ class FetchDataCommand extends Command
                 $this->entityManager->persist($competition);
             }
             
-            // Map Coach
             $coachData = $teamData['coach'];
-            $coach = new Coach();
-            $coach->setFirstNameCoach($coachData['firstName']);
-            $coach->setLastNameCoach($coachData['lastName']);
+            $coach = $this->entityManager->find(Coach::class, $coachData['id']) ?? new Coach();
+            $coach->setId($coachData['id']);
+            $coach->setFirstName($coachData['firstName']);
+            $coach->setLastName($coachData['lastName']);
             $coach->setName($coachData['name']);
             $coach->setDate(new DateTime($coachData['dateOfBirth']));
             $coach->setNationality($coachData['nationality']);
@@ -87,39 +87,16 @@ class FetchDataCommand extends Command
             $coach->setTeam($team);
             $this->entityManager->persist($coach);
             
-            // Map Squad
             foreach ($teamData['squad'] as $playerData) {
-                $player = new Player();
-                /*$player->setFirstNamePlayer($playerData['firstName']);*/
-                /*$player->setLastNamePlayer($playerData['lastName']);*/
+                $player = $this->entityManager->find(Player::class, $playerData['id']) ?? new Player();
+                $player->setId($playerData['id']);
                 $player->setName($playerData['name']);
                 $player->setPosition($playerData['position']);
                 $player->setDate(new DateTime($playerData['dateOfBirth']));
                 $player->setNationality($playerData['nationality']);
-                /*$player->setShirtNumber($playerData['shirtNumber']);*/
-                /*$player->setMarketValue($playerData['marketValue']);*/
-                /*$player->setContractStart($playerData['contract']['start']);*/
-                /*$player->setContractUntil($playerData['contract']['until']);*/
                 $player->setTeam($team);
                 $this->entityManager->persist($player);
             }
-            
-            // Map Staff
-            foreach ($teamData['staff'] as $staffData) {
-                $staff = new Staff();
-                $staff->setFirstNameStaff($staffData['firstName']);
-                $staff->setLastNameStaff($staffData['lastName']);
-                $staff->setName($staffData['name']);
-                $staff->setDate(new DateTime($staffData['dateOfBirth']));
-                $staff->setNationality($staffData['nationality']);
-                $staff->setContractStart($staffData['contract']['start']);
-                $staff->setContractUntil($staffData['contract']['until']);
-                $staff->setTeam($team);
-                $this->entityManager->persist($staff);
-                
-            }
-            
-            $this->entityManager->persist($team);
         }
         
         $this->entityManager->flush();

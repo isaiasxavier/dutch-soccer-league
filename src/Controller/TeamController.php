@@ -49,7 +49,7 @@ class TeamController extends AbstractController
         ]);
     }
 
-    #[Route('/homepage', name: 'app_homepage')]
+    #[Route('/dashboard', name: 'app_dashboard')]
     public function homepage(Request $request): Response
     {
         $limit = $request->query->getInt('limit', 10);
