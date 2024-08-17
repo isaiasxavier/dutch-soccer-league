@@ -21,6 +21,7 @@
                             <tr class="bg-gray-200">
                                 <th class="py-2 px-4 text-left">Position</th>
                                 <th class="py-2 px-4 text-left">Team</th>
+                                <th class="py-2 px-4 text-left">Emblem</th>
                                 <th class="py-2 px-4 text-left">Points</th>
                             </tr>
                             </thead>
@@ -30,7 +31,16 @@
                                     <tr class="border-b">
                                         <td class="py-2 px-4">{{ seasonTeamStanding.position }}</td>
                                         <td class="py-2 px-4">{{ seasonTeamStanding.team.name }}</td>
+                                        <td class="py-2 px-4">
+                                            <div class="w-6 h-6">
+                                                <img src="{{ seasonTeamStanding.team.crest }}"
+                                                     alt="{{ seasonTeamStanding.team.name }}"
+                                                     class="w-full h-full object-contain"
+                                                     style="width: 40%; height: 40%;">
+                                            </div>
+                                        </td>
                                         <td class="py-2 px-4">{{ seasonTeamStanding.points }}</td>
+
                                     </tr>
                                 {% endif %}
                             {% endfor %}
