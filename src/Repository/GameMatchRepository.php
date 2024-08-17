@@ -22,7 +22,7 @@ class GameMatchRepository extends ServiceEntityRepository
     }
 
     //    /**
-    //     * @return GameMatch[] Returns an array of GameMatch objects
+    //     * @return GameMatchBKUP[] Returns an array of GameMatchBKUP objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -36,7 +36,7 @@ class GameMatchRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?GameMatch
+    //    public function findOneBySomeField($value): ?GameMatchBKUP
     //    {
     //        return $this->createQueryBuilder('g')
     //            ->andWhere('g.exampleField = :val')

@@ -3,19 +3,17 @@
 require 'vendor/autoload.php';
 
 use App\Service\ApiService;
-use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\HttpClient;
 
-$logger = new NullLogger();
 $client = HttpClient::create();
-$apiService = new ApiService($client, $logger);
+$apiService = new ApiService($client);
 
 try {
-    $teams = $apiService->getTeams();
-    print_r($teams); // Add semicolon
+    /*$standing = $apiService->getStanding();
+    print_r($standing); */
 
-    /*$matches = $apiService->getMatchesByTeam(1); // Replace 1 with a valid team ID
-    print_r($matches); // Add semicolon*/
+    $matches = $apiService->getMatchesDed();
+    print_r($matches);
 } catch (Exception $e) {
     echo 'Error: '.$e->getMessage();
 }

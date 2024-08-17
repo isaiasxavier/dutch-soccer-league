@@ -17,8 +17,13 @@
         <nav class="bg-gray-800 text-white p-4">
             <ul class="flex justify-end space-x-4">
                 <li>
+                    <a href="{{ path('app_homepage') }}" class="hover:underline" @click="isOpen = false">
+                        Home
+                    </a>
+                </li>
+                <li>
                     {% if app.user %}
-                        <a href="{{ path('app_homepage') }}" class="hover:underline" @click="isOpen = false">
+                        <a href="{{ path('app_dashboard') }}" class="hover:underline" @click="isOpen = false">
                             Dashboard
                         </a>
                     {% endif %}

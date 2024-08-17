@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Homepage{% endblock %}
+
+{% block body %}
+    <div class="flex justify-center items-center min-h-screen bg-gray-100">
+        <div class="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md">
+            <h1 class="text-3xl font-bold text-center mb-4">{{ competition.name }}</h1>
+            <h2 class="text-2xl font-bold text-center mb-4">Season: {{ season.getStartDate()|date('Y') }}
+                - {{ season.getEndDate()|date('Y') }}</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {% for standing in standings %}
+                    <div class="bg-white p-4 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold mb-4">{{ standing.stage }} - {{ standing.type }}</h3>
+                        <table class="w-full bg-white border border-gray-200 rounded">
+                            <thead>
+                            <tr class="bg-gray-200">
+                                <th class="py-2 px-4 text-left">Team</th>
+                                <th class="py-2 px-4 text-left">Points</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for seasonTeamStanding in seasonTeamStandings %}
+                                {% if seasonTeamStanding.standing.id == standing.id %}
+                                    <tr class="border-b">
+                                        <td class="py-2 px-4">{{ seasonTeamStanding.team.name }}</td>
+                                        <td class="py-2 px-4">{{ seasonTeamStanding.points }}</td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

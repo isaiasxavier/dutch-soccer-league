@@ -15,7 +15,7 @@ class ApiService
         $this->client = $client;
     }
 
-    public function getTeams(int $limit = 10, int $offset = 0): array
+    public function getTeams(): array
     {
         $response = $this->client->request('GET', $this->apiUrl.'/competitions/DED/teams', [
             'headers' => [
@@ -28,7 +28,7 @@ class ApiService
         return $data['teams'];
     }
 
-    public function getTeamById($teamId): array
+    /*public function getTeamById($teamId): array
     {
         $response = $this->client->request('GET', $this->apiUrl.'/teams/'.$teamId, [
             'headers' => [
@@ -39,15 +39,33 @@ class ApiService
         return $response->toArray();
     }
 
-    public function getMatchesByTeam($teamId, int $limit = 10, int $offset = 0): array
+    public function getMatchesByTeam($teamId): array
     {
         $response = $this->client->request('GET', $this->apiUrl.'/teams/'.$teamId.'/matches', [
             'headers' => [
                 'X-Auth-Token' => $this->authToken,
             ],
-            'query' => [
-                'limit' => $limit,
-                'offset' => $offset,
+        ]);
+
+        return $response->toArray();
+    }*/
+
+    public function getMatchesDed(): array
+    {
+        $response = $this->client->request('GET', $this->apiUrl.'/competitions/DED/matches', [
+            'headers' => [
+                'X-Auth-Token' => $this->authToken,
+            ],
+        ]);
+
+        return $response->toArray();
+    }
+
+    public function getStanding(): array
+    {
+        $response = $this->client->request('GET', $this->apiUrl.'/competitions/DED/standings', [
+            'headers' => [
+                'X-Auth-Token' => $this->authToken,
             ],
         ]);
 

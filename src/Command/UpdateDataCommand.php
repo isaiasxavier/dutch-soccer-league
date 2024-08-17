@@ -7,7 +7,6 @@ use App\Entity\Player;
 use App\Entity\RunningCompetition;
 use App\Entity\Team;
 use App\Service\ApiService;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -44,17 +43,17 @@ class UpdateDataCommand extends Command
 
         return Command::SUCCESS;
     }
-    
+
     private function updateData(SymfonyStyle $io): void
     {
         $teams = $this->apiService->getTeams();
-        
+
         foreach ($teams as $teamData) {
             $team = $this->entityManager->find(Team::class, $teamData['id']);
-            
+
             if ($team) {
                 $updated = false;
-                
+
                 if ($team->getName() !== $teamData['shortName']) {
                     $team->setName($teamData['shortName']);
                     $updated = true;
@@ -91,14 +90,14 @@ class UpdateDataCommand extends Command
                     $team->setVenue($teamData['venue']);
                     $updated = true;
                 }
-                if ($team->getLastUpdated() != new DateTime($teamData['lastUpdated'])) {
-                    $team->setLastUpdated(new DateTime($teamData['lastUpdated']));
+                if ($team->getLastUpdated() != new \DateTime($teamData['lastUpdated'])) {
+                    $team->setLastUpdated(new \DateTime($teamData['lastUpdated']));
                     $updated = true;
                 }
-                
+
                 foreach ($teamData['runningCompetitions'] as $competitionData) {
                     $competition = $this->entityManager->find(RunningCompetition::class, $competitionData['id']);
-                    
+
                     if ($competition) {
                         if ($competition->getName() !== $competitionData['name']) {
                             $competition->setName($competitionData['name']);
@@ -118,7 +117,7 @@ class UpdateDataCommand extends Command
                         }
                     }
                 }
-                
+
                 $coachData = $teamData['coach'];
                 $coach = $this->entityManager->find(Coach::class, $coachData['id']);
                 if ($coach) {
@@ -134,8 +133,8 @@ class UpdateDataCommand extends Command
                         $coach->setLastName($coachData['lastName']);
                         $updated = true;
                     }
-                    if ($coach->getDate() != new DateTime($coachData['dateOfBirth'])) {
-                        $coach->setDate(new DateTime($coachData['dateOfBirth']));
+                    if ($coach->getDate() != new \DateTime($coachData['dateOfBirth'])) {
+                        $coach->setDate(new \DateTime($coachData['dateOfBirth']));
                         $updated = true;
                     }
                     if ($coach->getNationality() !== $coachData['nationality']) {
@@ -151,7 +150,7 @@ class UpdateDataCommand extends Command
                         $updated = true;
                     }
                 }
-                
+
                 foreach ($teamData['squad'] as $playerData) {
                     $player = $this->entityManager->find(Player::class, $playerData['id']);
                     if ($player) {
@@ -163,23 +162,23 @@ class UpdateDataCommand extends Command
                             $player->setPosition($playerData['position']);
                             $updated = true;
                         }
-                        if ($player->getDate() != new DateTime($playerData['dateOfBirth'])) {
-                            $player->setDate(new DateTime($playerData['dateOfBirth']));
+                        if ($player->getDate() != new \DateTime($playerData['dateOfBirth'])) {
+                            $player->setDate(new \DateTime($playerData['dateOfBirth']));
                             $updated = true;
                         }
                         if ($player->getNationality() !== $playerData['nationality']) {
                             $player->setNationality($playerData['nationality']);
                             $updated = true;
                         }
-                    } 
+                    }
                 }
-                
+
                 if ($updated) {
                     $this->entityManager->persist($team);
                 }
             }
         }
-        
+
         $this->entityManager->flush();
         $io->success('Updated data for '.count($teams).' teams.');
     }

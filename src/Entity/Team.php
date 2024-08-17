@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TeamRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
@@ -41,15 +43,34 @@ class Team
 
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $lastUpdated = null;
-    
+
+    /**
+     * @var Collection<int, SeasonTeamStanding>
+     */
+    #[ORM\OneToMany(targetEntity: SeasonTeamStanding::class, mappedBy: 'team')]
+    private Collection $season_team_standing;
+
+    /**
+     * @var Collection<int, GameMatch>
+     */
+    #[ORM\OneToMany(targetEntity: GameMatch::class, mappedBy: 'team')]
+    private Collection $gameMatch;
+
+    public function __construct()
+    {
+        $this->season_team_standing = new ArrayCollection();
+        $this->gameMatch = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
-    
+
     public function setId(int $id): self
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -172,4 +193,64 @@ class Team
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, SeasonTeamStanding>
+     */
+    public function getSeasonTeamStanding(): Collection
+    {
+        return $this->season_team_standing;
+    }
+
+    public function addSeasonTeamStanding(SeasonTeamStanding $seasonTeamStanding): static
+    {
+        if (!$this->season_team_standing->contains($seasonTeamStanding)) {
+            $this->season_team_standing->add($seasonTeamStanding);
+            $seasonTeamStanding->setTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSeasonTeamStanding(SeasonTeamStanding $seasonTeamStanding): static
+    {
+        if ($this->season_team_standing->removeElement($seasonTeamStanding)) {
+            // set the owning side to null (unless already changed)
+            if ($seasonTeamStanding->getTeam() === $this) {
+                $seasonTeamStanding->setTeam(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GameMatchBKUP>
+     */
+    public function getGameMatch(): Collection
+    {
+        return $this->gameMatch;
+    }
+
+    /*public function addGameMatch(GameMatch $gameMatch): static
+    {
+        if (!$this->gameMatch->contains($gameMatch)) {
+            $this->gameMatch->add($gameMatch);
+            $gameMatch->setTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGameMatch(GameMatch $gameMatch): static
+    {
+        if ($this->gameMatch->removeElement($gameMatch)) {
+            // set the owning side to null (unless already changed)
+            if ($gameMatch->getTeam() === $this) {
+                $gameMatch->setTeam(null);
+            }
+        }
+
+        return $this;
+    }*/
 }

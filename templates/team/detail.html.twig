@@ -3,8 +3,9 @@
 {% block body %}
     <div class="container mx-auto p-4 space-y-8">
         <!-- Primeiro Bloco -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
             <h1 class="text-3xl font-bold mb-4">{{ team.name }}</h1>
+            <img src="{{ team.crest }}" alt="{{ team.name }} logo" class="w-24 h-24 mb-4">
             <p><strong>Founded:</strong> {{ team.founded }}</p>
             <p><strong>Address:</strong> {{ team.address }}</p>
             <p><strong>Website:</strong> <a href="{{ team.website }}" target="_blank"
@@ -18,24 +19,63 @@
             <!-- Segundo Bloco -->
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-2xl font-semibold mb-2">Coach</h2>
-                <p class="mb-4">{{ team.coach.name }} ({{ team.coach.nationality }})</p>
+                <table class="min-w-full bg-white">
+                    <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b">Name</th>
+                        <th class="py-2 px-4 border-b">Nationality</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="py-2 px-4 border-b">{{ coach.name }}</td>
+                        <td class="py-2 px-4 border-b">{{ coach.nationality }}</td>
+                    </tr>
+                    </tbody>
+                </table>
 
                 <h2 class="text-2xl font-semibold mb-2">Squad</h2>
-                <ul class="list-disc list-inside mb-4">
-                    {% for player in team.squad %}
-                        <li>{{ player.name }} - {{ player.position }} ({{ player.nationality }})</li>
+                <table class="min-w-full bg-white">
+                    <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b">Name</th>
+                        <th class="py-2 px-4 border-b">Position</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for player in squad %}
+                        <tr>
+                            <td class="py-2 px-4 border-b">{{ player.name }}</td>
+                            <td class="py-2 px-4 border-b">{{ player.position }}</td>
+                        </tr>
                     {% endfor %}
-                </ul>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Terceiro Bloco -->
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-2xl font-semibold mb-2">Matches</h2>
-                <ul class="list-disc list-inside mb-4">
+                <table class="min-w-full bg-white">
+                    <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b">Home Team</th>
+                        <th class="py-2 px-4 border-b">Away Team</th>
+                        <th class="py-2 px-4 border-b">Status</th>
+                        <th class="py-2 px-4 border-b">league</th>
+                    </tr>
+                    </thead>
+                    <tbody>
                     {% for match in matches %}
-                        <li>{{ match.homeTeam.name }} vs {{ match.awayTeam.name }} - {{ match.utcDate }}</li>
+                        <tr>
+                            <td class="py-2 px-4 border-b">{{ match.homeTeam.name }}</td>
+                            <td class="py-2 px-4 border-b">{{ match.awayTeam.name }}</td>
+                            <td class="py-2 px-4 border-b">{{ match.status }}</td>
+                            <td class="py-2 px-4 border-b">{{ match.scoreWinner }}</td>
+                        </tr>
                     {% endfor %}
-                </ul>
+                    </tbody>
+                </table>
                 <div class="mt-4 flex justify-center space-x-4">
                     {% if offset > 0 %}
                         <a href="{{ path('app_team_detail', {id: team.id, limit: limit, offset: offset - limit}) }}"
