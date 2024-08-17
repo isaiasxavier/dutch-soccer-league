@@ -5,17 +5,21 @@
 {% block body %}
     <div class="flex justify-center items-center min-h-screen bg-gray-100">
         <div class="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md">
-            <h1 class="text-3xl font-bold text-center mb-4">{{ competition.name }}</h1>
-            <h2 class="text-2xl font-bold text-center mb-4">Season: {{ season.getStartDate()|date('Y') }}
-                - {{ season.getEndDate()|date('Y') }}</h2>
+            <h1 class="text-3xl font-bold text-center mb-4">{{ competition.name }}
+                Season: {{ season.getStartDate()|date('Y') }} - {{ season.getEndDate()|date('Y') }}</h1>
+            <div class="flex justify-center">
+                <img src="{{ competition.emblem }}" alt="{{ competition.emblem }} logo" class="w-24 h-24 mb-4">
+            </div>
+            <h2 class="text-2xl font-bold text-center mb-4"></h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="flex justify-center">
                 {% for standing in standings %}
                     <div class="bg-white p-4 rounded-lg shadow-md">
                         <h3 class="text-xl font-bold mb-4">{{ standing.stage }} - {{ standing.type }}</h3>
                         <table class="w-full bg-white border border-gray-200 rounded">
                             <thead>
                             <tr class="bg-gray-200">
+                                <th class="py-2 px-4 text-left">Position</th>
                                 <th class="py-2 px-4 text-left">Team</th>
                                 <th class="py-2 px-4 text-left">Points</th>
                             </tr>
@@ -24,6 +28,7 @@
                             {% for seasonTeamStanding in seasonTeamStandings %}
                                 {% if seasonTeamStanding.standing.id == standing.id %}
                                     <tr class="border-b">
+                                        <td class="py-2 px-4">{{ seasonTeamStanding.position }}</td>
                                         <td class="py-2 px-4">{{ seasonTeamStanding.team.name }}</td>
                                         <td class="py-2 px-4">{{ seasonTeamStanding.points }}</td>
                                     </tr>
@@ -33,6 +38,19 @@
                         </table>
                     </div>
                 {% endfor %}
+            </div>
+
+            <div class="mt-4 flex justify-center space-x-4">
+                {% if offset > 0 %}
+                    <a href="{{ path('app_homepage', {limit: limit, offset: offset - limit}) }}"
+                       class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">
+                        Previous
+                    </a>
+                {% endif %}
+                <a href="{{ path('app_homepage', {limit: limit, offset: offset + limit}) }}"
+                   class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">
+                    Next
+                </a>
             </div>
         </div>
     </div>

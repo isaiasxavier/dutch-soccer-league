@@ -7,6 +7,7 @@ use App\Repository\SeasonRepository;
 use App\Repository\SeasonTeamStandingRepository;
 use App\Repository\StandingRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -17,7 +18,8 @@ class HomepageController extends AbstractController
         SeasonRepository $seasonRepository,
         CompetitionRepository $competitionRepository,
         StandingRepository $standingRepository,
-        SeasonTeamStandingRepository $seasonTeamStandingRepository
+        SeasonTeamStandingRepository $seasonTeamStandingRepository,
+        Request $request,
     ): Response {
         // Buscar a competição Eredivisie
         $competition = $competitionRepository->findOneBy(['name' => 'Eredivisie']);
@@ -30,12 +32,26 @@ class HomepageController extends AbstractController
 
         // Buscar os dados de SeasonTeamStanding relacionados às standings
         $seasonTeamStandings = $seasonTeamStandingRepository->findBy(['standing' => $standings]);
+        
+        $limit = 8; // Definindo o limite de 8 itens por página
+        $offset = $request->query->getInt('offset', 0);
+        
+        // Buscar os dados de SeasonTeamStanding relacionados às standings com paginação
+        $seasonTeamStandings = $seasonTeamStandingRepository->createQueryBuilder('sts')
+            ->where('sts.standing IN (:standings)')
+            ->setParameter('standings', $standings)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
 
         return $this->render('homepage/homepage.html.twig', [
             'competition' => $competition,
             'season' => $season,
             'standings' => $standings,
             'seasonTeamStandings' => $seasonTeamStandings,
+            'limit' => $limit,
+            'offset' => $offset,
         ]);
     }
 }
