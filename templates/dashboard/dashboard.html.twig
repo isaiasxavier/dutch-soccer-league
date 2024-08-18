@@ -42,7 +42,7 @@
                                 </td>
                                 {% if app.user %}
                                     <td>
-                                        <a href="{{ path('app_follow_list', {'id': team.id}) }}"
+                                        <a href="{{ path('app_follow_action', {'id': team.id}) }}"
                                            class="hover:underline"
                                            onclick="this.style.pointerEvents='none'; this.innerHTML='Following...';">
                                             Follow

@@ -23,6 +23,13 @@
                 </li>
                 <li>
                     {% if app.user %}
+                        <a href="{{ path('app_follow') }}" class="hover:underline" @click="isOpen = false">
+                            Follow
+                        </a>
+                    {% endif %}
+                </li>
+                <li>
+                    {% if app.user %}
                         <a href="{{ path('app_dashboard') }}" class="hover:underline" @click="isOpen = false">
                             Dashboard
                         </a>
@@ -41,6 +48,7 @@
                         </a>
                     {% endif %}
                 </li>
+
             </ul>
         </nav>
     {% endblock %}

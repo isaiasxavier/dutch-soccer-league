@@ -29,9 +29,6 @@ class HomepageController extends AbstractController
 
         // Buscar as standings da temporada atual
         $standings = $standingRepository->findBy(['season' => $season]);
-
-        // Buscar os dados de SeasonTeamStanding relacionados às standings
-        $seasonTeamStandings = $seasonTeamStandingRepository->findBy(['standing' => $standings]);
         
         $limit = 8; // Definindo o limite de 8 itens por página
         $offset = $request->query->getInt('offset', 0);

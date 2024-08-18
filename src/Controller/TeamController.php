@@ -4,11 +4,13 @@ namespace App\Controller;
 
 
 use AllowDynamicProperties;
+use App\Entity\Follow;
 use App\Repository\CoachRepository;
 use App\Repository\FollowRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -70,12 +72,6 @@ use Symfony\Component\Routing\Attribute\Route;
             ->getQuery()
             ->getResult();
         
-        $isFollowedByUser = false;
-        if ($this->getUser()) {
-            $follow = $this->followRepository->findOneBy(['user' => $this->getUser(), 'team' => $team]);
-            $isFollowedByUser = $follow !== null;
-        }
-
         return $this->render('team/detail.html.twig', [
             'team' => $team,
             'coach' => $coach,
@@ -83,50 +79,31 @@ use Symfony\Component\Routing\Attribute\Route;
             'matches' => $matches,
             'limit' => $limit,
             'offset' => $offset,
-            'isFollowedByUser' => $isFollowedByUser,
-        ]);
-    }
-
-    #[Route('/dashboard', name: 'app_dashboard')]
-    public function dashboard(Request $request): Response
-    {
-        /*$limit = $request->query->getInt('limit', 10);
-        $offset = $request->query->getInt('offset', 0);
-        $teams = $this->apiService->getTeams($limit, $offset);
-
-        return $this->render('dashboard/dashboard.html.twig', [
-            'teams' => $teams,
-            'limit' => $limit,
-            'offset' => $offset,
-        ]);*/
-        $limit = $request->query->getInt('limit', 3);
-        $offset = $request->query->getInt('offset', 0);
-        $teams = $this->teamRepository->findBy([], null, $limit, $offset);
-
-        return $this->render('dashboard/dashboard.html.twig', [
-            'teams' => $teams,
-            'limit' => $limit,
-            'offset' => $offset,
         ]);
     }
     
-    
-    #[Route('/teams/{id}/unfollow', name: 'app_team_unfollow')]
-    public function unfollowTeam($id, FollowRepository $followRepository): Response
+    #[Route('/teams/{id}/follow-action', name: 'app_follow_action')]
+    public function followTeam($id, ManagerRegistry $doctrine): Response
     {
         $user = $this->getUser();
         $team = $this->teamRepository->find($id);
         
         if ($user && $team) {
-            $follow = $followRepository->findOneBy(['user' => $user, 'team' => $team]);
+            $followRepository = $doctrine->getRepository(Follow::class);
+            $existingFollow = $followRepository->findOneBy(['user' => $user, 'team' => $team]);
             
-            if ($follow) {
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->remove($follow);
+            if (!$existingFollow) {
+                $follow = new Follow();
+                $follow->setUser($user);
+                $follow->setTeam($team);
+                
+                $entityManager = $doctrine->getManager();
+                $entityManager->persist($follow);
                 $entityManager->flush();
             }
         }
         
-        return $this->redirectToRoute('app_team_detail', ['id' => $id]);
+        return $this->redirectToRoute('app_follow');
     }
+    
 }
