@@ -42,11 +42,19 @@
                                 </td>
                                 {% if app.user %}
                                     <td>
-                                        <a href="{{ path('app_follow_action', {'id': team.id}) }}"
-                                           class="hover:underline"
-                                           onclick="this.style.pointerEvents='none'; this.innerHTML='Following...';">
-                                            Follow
-                                        </a>
+                                        {% if team.id in followed_team_ids %}
+                                            <a href="{{ path('app_unfollow', {'id': team.id}) }}"
+                                               class="hover:underline text-red-500 hover:underline"
+                                               onclick="this.style.pointerEvents='none'; this.innerHTML='Unfollowing...';">
+                                                Unfollow
+                                            </a>
+                                        {% else %}
+                                            <a href="{{ path('app_follow_action', {'id': team.id}) }}"
+                                               class="hover:underline text-blue-500 hover:underline"
+                                               onclick="this.style.pointerEvents='none'; this.innerHTML='Following...';">
+                                                Follow
+                                            </a>
+                                        {% endif %}
                                     </td>
                                 {% endif %}
                             </tr>

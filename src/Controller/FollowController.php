@@ -29,6 +29,7 @@ use Symfony\Component\Routing\Attribute\Route;
         $this->standingRepository = $standingRepository;}
     
     
+    
     #[Route('/follow/{id}', name: 'app_follow_action')]
     public function followTeam($id, ManagerRegistry $doctrine): Response
     {
@@ -52,6 +53,7 @@ use Symfony\Component\Routing\Attribute\Route;
         
         return $this->redirectToRoute('app_follow');
     }
+    
     #[Route('/followed-teams', name: 'app_follow')]
     public function index(ManagerRegistry $doctrine): Response
     {
