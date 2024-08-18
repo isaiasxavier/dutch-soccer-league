@@ -43,7 +43,7 @@ class Standing
     {
         return $this->id;
     }
-
+    
     public function getStage(): ?string
     {
         return $this->stage;
