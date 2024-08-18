@@ -87,7 +87,7 @@ use Symfony\Component\Routing\Annotation\Route;
             'limit' => $limit,
             'offset' => $offset,
         ]);*/
-        $limit = $request->query->getInt('limit', 10);
+        $limit = $request->query->getInt('limit', 3);
         $offset = $request->query->getInt('offset', 0);
         $teams = $this->teamRepository->findBy([], null, $limit, $offset);
 
