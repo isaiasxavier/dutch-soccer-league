@@ -10,6 +10,7 @@ use App\Repository\StandingRepository;
 use App\Repository\TeamRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -27,7 +28,31 @@ use Symfony\Component\Routing\Attribute\Route;
         $this->seasonTeamStandingRepository = $seasonTeamStandingRepository;
         $this->standingRepository = $standingRepository;}
     
-    #[Route('/follow', name: 'app_follow')]
+    
+    #[Route('/follow/{id}', name: 'app_follow_action')]
+    public function followTeam($id, ManagerRegistry $doctrine): Response
+    {
+        $user = $this->getUser();
+        $team = $this->teamRepository->find($id);
+        
+        if ($user && $team) {
+            $followRepository = $doctrine->getRepository(Follow::class);
+            $existingFollow = $followRepository->findOneBy(['user' => $user, 'team' => $team]);
+            
+            if (!$existingFollow) {
+                $follow = new Follow();
+                $follow->setUser($user);
+                $follow->setTeam($team);
+                
+                $entityManager = $doctrine->getManager();
+                $entityManager->persist($follow);
+                $entityManager->flush();
+            }
+        }
+        
+        return $this->redirectToRoute('app_follow');
+    }
+    #[Route('/followed-teams', name: 'app_follow')]
     public function index(ManagerRegistry $doctrine): Response
     {
         $user = $this->getUser();
@@ -43,6 +68,22 @@ use Symfony\Component\Routing\Attribute\Route;
         return $this->render('follow/follow.html.twig', [
             'followed_teams' => $teams,
         ]);
+    }
+    
+    #[Route('/unfollow/{id}', name: 'app_unfollow')]
+    public function unfollow(int $id, ManagerRegistry $doctrine): RedirectResponse
+    {
+        $user = $this->getUser();
+        $follow = $doctrine->getRepository(Follow::class)
+            ->findOneBy(['user' => $user, 'team' => $id]);
+        
+        if ($follow) {
+            $entityManager = $doctrine->getManager();
+            $entityManager->remove($follow);
+            $entityManager->flush();
+        }
+        
+        return $this->redirectToRoute('app_follow');
     }
     
     

@@ -4,13 +4,11 @@ namespace App\Controller;
 
 
 use AllowDynamicProperties;
-use App\Entity\Follow;
 use App\Repository\CoachRepository;
 use App\Repository\FollowRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -82,28 +80,5 @@ use Symfony\Component\Routing\Attribute\Route;
         ]);
     }
     
-    #[Route('/teams/{id}/follow-action', name: 'app_follow_action')]
-    public function followTeam($id, ManagerRegistry $doctrine): Response
-    {
-        $user = $this->getUser();
-        $team = $this->teamRepository->find($id);
-        
-        if ($user && $team) {
-            $followRepository = $doctrine->getRepository(Follow::class);
-            $existingFollow = $followRepository->findOneBy(['user' => $user, 'team' => $team]);
-            
-            if (!$existingFollow) {
-                $follow = new Follow();
-                $follow->setUser($user);
-                $follow->setTeam($team);
-                
-                $entityManager = $doctrine->getManager();
-                $entityManager->persist($follow);
-                $entityManager->flush();
-            }
-        }
-        
-        return $this->redirectToRoute('app_follow');
-    }
     
 }
