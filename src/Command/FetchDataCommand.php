@@ -12,6 +12,7 @@ use App\Entity\SeasonTeamStanding;
 use App\Entity\Standing;
 use App\Entity\Team;
 use App\Service\ApiService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -44,7 +45,7 @@ class FetchDataCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $this->fetchAndSaveDataTeam($io);
+        $this->fetchAndSaveDataTeamCoachPlayer($io);
         $this->fetchAndSaveCompetitionAndSeason($io);
         $this->fetchAndSaveDataStanding($io);
         $this->fetchAndSaveSeasonTeamStanding($io);
@@ -53,7 +54,7 @@ class FetchDataCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function fetchAndSaveDataTeam(SymfonyStyle $io): void
+    private function fetchAndSaveDataTeamCoachPlayer(SymfonyStyle $io): void
     {
         $teams = $this->apiService->getTeams();
 
@@ -69,7 +70,7 @@ class FetchDataCommand extends Command
             $team->setFounded($teamData['founded']);
             $team->setClubColors($teamData['clubColors']);
             $team->setVenue($teamData['venue']);
-            $team->setLastUpdated(new \DateTime($teamData['lastUpdated']));
+            $team->setLastUpdated(new DateTime($teamData['lastUpdated']));
 
             foreach ($teamData['runningCompetitions'] as $competitionData) {
                 $competition = $this->entityManager->find(RunningCompetition::class, $competitionData['id']) ?? new RunningCompetition();
@@ -87,8 +88,7 @@ class FetchDataCommand extends Command
             $coach->setId($coachData['id']);
             $coach->setFirstName($coachData['firstName']);
             $coach->setLastName($coachData['lastName']);
-            $coach->setName($coachData['name']);
-            $coach->setDate(new \DateTime($coachData['dateOfBirth']));
+            $coach->setDate(new DateTime($coachData['dateOfBirth']));
             $coach->setNationality($coachData['nationality']);
             $coach->setContractStart($coachData['contract']['start']);
             $coach->setContractUntil($coachData['contract']['until']);
@@ -100,7 +100,7 @@ class FetchDataCommand extends Command
                 $player->setId($playerData['id']);
                 $player->setName($playerData['name']);
                 $player->setPosition($playerData['position']);
-                $player->setDate(new \DateTime($playerData['dateOfBirth']));
+                $player->setDate(new DateTime($playerData['dateOfBirth']));
                 $player->setNationality($playerData['nationality']);
                 $player->setTeam($team);
                 $this->entityManager->persist($player);
@@ -128,8 +128,8 @@ class FetchDataCommand extends Command
             $seasonData = $standings['season'];
             $season = $this->entityManager->find(Season::class, $seasonData['id']) ?? new Season();
             $season->setId($seasonData['id']);
-            $season->setStartDate(new \DateTime($seasonData['startDate']));
-            $season->setEndDate(new \DateTime($seasonData['endDate']));
+            $season->setStartDate(new DateTime($seasonData['startDate']));
+            $season->setEndDate(new DateTime($seasonData['endDate']));
             $season->setCurrentMatchday($seasonData['currentMatchday']);
             $season->setWinner($seasonData['winner']);
             $season->setCompetition($competition);
@@ -148,8 +148,8 @@ class FetchDataCommand extends Command
             $seasonData = $standings['season'];
             $season = $this->entityManager->find(Season::class, $seasonData['id']) ?? new Season();
             $season->setId($seasonData['id']);
-            $season->setStartDate(new \DateTime($seasonData['startDate']));
-            $season->setEndDate(new \DateTime($seasonData['endDate']));
+            $season->setStartDate(new DateTime($seasonData['startDate']));
+            $season->setEndDate(new DateTime($seasonData['endDate']));
             $season->setCurrentMatchday($seasonData['currentMatchday']);
             $season->setWinner($seasonData['winner']);
             $this->entityManager->persist($season);
@@ -220,11 +220,9 @@ class FetchDataCommand extends Command
             $gameMatch->setStatus($matchData['status']);
             $gameMatch->setMatchday($matchData['matchday']);
             $gameMatch->setStage($matchData['stage']);
-            $gameMatch->setLastUpdated(new \DateTime($matchData['lastUpdated']));
+            $gameMatch->setLastUpdated(new DateTime($matchData['lastUpdated']));
             $gameMatch->setHomeTeamId($matchData['homeTeam']['id']);
-            $gameMatch->setHomeTeamName($matchData['homeTeam']['name']);
             $gameMatch->setAwayTeamId($matchData['awayTeam']['id']);
-            $gameMatch->setAwayTeamName($matchData['awayTeam']['name']);
             $gameMatch->setHomeTeamScoreFullTime($matchData['score']['fullTime']['home']);
             $gameMatch->setAwayTeamScoreFullTime($matchData['score']['fullTime']['away']);
             $gameMatch->setHomeTeamScoreHalfTime($matchData['score']['halfTime']['home']);
@@ -233,7 +231,7 @@ class FetchDataCommand extends Command
             $gameMatch->setScoreDuration($matchData['score']['duration']);
             $gameMatch->setRefereeId($matchData['referees'][0]['id'] ?? null);
             $gameMatch->setRefereeName($matchData['referees'][0]['name'] ?? null);
-
+            $gameMatch->setDateGame(new DateTime($matchData['utcDate']));
             $homeTeam = $this->entityManager->find(Team::class, $matchData['homeTeam']['id']);
             $awayTeam = $this->entityManager->find(Team::class, $matchData['awayTeam']['id']);
             $gameMatch->setHomeTeam($homeTeam);

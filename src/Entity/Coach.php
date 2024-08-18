@@ -19,9 +19,6 @@ class Coach
     #[ORM\Column(length: 255)]
     private ?string $lastname = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
-
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date = null;
 
@@ -70,18 +67,6 @@ class Coach
     public function setLastName(string $lastname): static
     {
         $this->lastname = $lastname;
-
-        return $this;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
 
         return $this;
     }
