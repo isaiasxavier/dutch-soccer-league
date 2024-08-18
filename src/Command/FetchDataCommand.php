@@ -45,8 +45,8 @@ class FetchDataCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $this->fetchAndSaveDataTeamCoachPlayer($io);
-        $this->fetchAndSaveCompetitionAndSeason($io);
+        $this->fetchAndSaveDataTeamCoachCompetitionPlayer($io);
+        $this->fetchAndSaveSeason($io);
         $this->fetchAndSaveDataStanding($io);
         $this->fetchAndSaveSeasonTeamStanding($io);
         $this->fetchAndSaveGameMatch($io);
@@ -54,7 +54,7 @@ class FetchDataCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function fetchAndSaveDataTeamCoachPlayer(SymfonyStyle $io): void
+    private function fetchAndSaveDataTeamCoachCompetitionPlayer(SymfonyStyle $io): void
     {
         $teams = $this->apiService->getTeams();
 
@@ -71,9 +71,9 @@ class FetchDataCommand extends Command
             $team->setClubColors($teamData['clubColors']);
             $team->setVenue($teamData['venue']);
             $team->setLastUpdated(new DateTime($teamData['lastUpdated']));
-
+        
             foreach ($teamData['runningCompetitions'] as $competitionData) {
-                $competition = $this->entityManager->find(RunningCompetition::class, $competitionData['id']) ?? new RunningCompetition();
+                $competition = $this->entityManager->find(Competition::class, $competitionData['id']) ?? new Competition();
                 $competition->setId($competitionData['id']);
                 $competition->setName($competitionData['name']);
                 $competition->setCode($competitionData['code']);
@@ -111,20 +111,14 @@ class FetchDataCommand extends Command
         $io->success('Fetched and saved '.count($teams).' teams.');
     }
 
-    private function fetchAndSaveCompetitionAndSeason(SymfonyStyle $io): void
+    private function fetchAndSaveSeason(SymfonyStyle $io): void
     {
         $standings = $this->apiService->getStanding();
 
         foreach ($standings['standings'] as $standingData) {
             $competitionData = $standings['competition'];
             $competition = $this->entityManager->find(Competition::class, $competitionData['id']) ?? new Competition();
-            $competition->setId($competitionData['id']);
-            $competition->setName($competitionData['name']);
-            $competition->setCode($competitionData['code']);
-            $competition->setType($competitionData['type']);
-            $competition->setEmblem($competitionData['emblem']);
-            $this->entityManager->persist($competition);
-
+            
             $seasonData = $standings['season'];
             $season = $this->entityManager->find(Season::class, $seasonData['id']) ?? new Season();
             $season->setId($seasonData['id']);
