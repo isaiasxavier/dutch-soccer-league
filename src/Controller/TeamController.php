@@ -2,16 +2,19 @@
 
 namespace App\Controller;
 
+
+use AllowDynamicProperties;
 use App\Repository\CoachRepository;
+use App\Repository\FollowRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-#[\AllowDynamicProperties] class TeamController extends AbstractController
+#[AllowDynamicProperties] class TeamController extends AbstractController
 {
     /*private $apiService;
 
@@ -35,17 +38,19 @@ use Symfony\Component\Routing\Annotation\Route;
             'offset' => $offset,
         ]);
     }*/
-
+    
     public function __construct(
         TeamRepository $teamRepository,
         CoachRepository $coachRepository,
         PlayerRepository $playerRepository,
         GameMatchRepository $gameMatchRepository,
+        FollowRepository $followRepository,
     ) {
         $this->teamRepository = $teamRepository;
         $this->coachRepository = $coachRepository;
         $this->playerRepository = $playerRepository;
         $this->gameMatchRepository = $gameMatchRepository;
+        $this->followRepository = $followRepository;
     }
 
     #[Route('/teams/{id}', name: 'app_team_detail')]
@@ -64,6 +69,12 @@ use Symfony\Component\Routing\Annotation\Route;
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+        
+        $isFollowedByUser = false;
+        if ($this->getUser()) {
+            $follow = $this->followRepository->findOneBy(['user' => $this->getUser(), 'team' => $team]);
+            $isFollowedByUser = $follow !== null;
+        }
 
         return $this->render('team/detail.html.twig', [
             'team' => $team,
@@ -72,6 +83,7 @@ use Symfony\Component\Routing\Annotation\Route;
             'matches' => $matches,
             'limit' => $limit,
             'offset' => $offset,
+            'isFollowedByUser' => $isFollowedByUser,
         ]);
     }
 
@@ -96,5 +108,25 @@ use Symfony\Component\Routing\Annotation\Route;
             'limit' => $limit,
             'offset' => $offset,
         ]);
+    }
+    
+    
+    #[Route('/teams/{id}/unfollow', name: 'app_team_unfollow')]
+    public function unfollowTeam($id, FollowRepository $followRepository): Response
+    {
+        $user = $this->getUser();
+        $team = $this->teamRepository->find($id);
+        
+        if ($user && $team) {
+            $follow = $followRepository->findOneBy(['user' => $user, 'team' => $team]);
+            
+            if ($follow) {
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->remove($follow);
+                $entityManager->flush();
+            }
+        }
+        
+        return $this->redirectToRoute('app_team_detail', ['id' => $id]);
     }
 }
