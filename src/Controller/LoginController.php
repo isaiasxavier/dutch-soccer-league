@@ -30,7 +30,7 @@ class LoginController extends AbstractController
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
-    
+
     #[Route(path: '/redirect-logout', name: 'app_redirect_logout')]
     public function redirectLogout(): RedirectResponse
     {

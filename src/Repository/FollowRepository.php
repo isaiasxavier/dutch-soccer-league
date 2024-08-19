@@ -35,16 +35,33 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
         return $followedTeamIds;
     }
 
+    public function getFollowedTeamsByUser($user): array
+    {
+        $follows = $this->findBy(['user' => $user]);
+
+        $teams = [];
+        foreach ($follows as $follow) {
+            $teams[] = $follow->getTeam();
+        }
+
+        return $teams;
+    }
+
     public function followTeamAction($user, $team): array
     {
         $existingFollow = $this->findOneBy(['user' => $user, 'team' => $team]);
+
+        /*$team = null;
+        $user = null;*/
 
         if (!$existingFollow) {
             $follow = new Follow();
             $follow->setUser($user);
             $follow->setTeam($team);
 
-            $errors = $this->validator->validate($follow);
+            $constraint = new \App\Validator\Follow();
+            $errors = $this->validator->validate($follow, $constraint);
+
             if (count($errors) > 0) {
                 return ['errors' => $errors];
             }

@@ -6,12 +6,12 @@ use App\Repository\FollowRepository;
 use App\Repository\SeasonTeamStandingRepository;
 use App\Repository\StandingRepository;
 use App\Repository\TeamRepository;
+use App\Validator\FollowValidator;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[\AllowDynamicProperties] class FollowController extends AbstractController
 {
@@ -20,32 +20,30 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
         FollowRepository $followRepository,
         SeasonTeamStandingRepository $seasonTeamStandingRepository,
         StandingRepository $standingRepository,
-        ValidatorInterface $validator,
+        FollowValidator $followValidator,
     ) {
         $this->teamRepository = $teamRepository;
         $this->followRepository = $followRepository;
         $this->seasonTeamStandingRepository = $seasonTeamStandingRepository;
         $this->standingRepository = $standingRepository;
-        $this->validator = $validator;
+        $this->followValidator = $followValidator;
     }
 
     #[Route('/follow/{id}', name: 'app_follow_action')]
     public function followTeam($id): Response
     {
         $user = $this->getUser();
+        
         $team = $this->teamRepository->findTeamById($id);
+        
+        $result = $this->followRepository->followTeamAction($user, $team);
 
-        if ($user && $team) {
-            $result = $this->followRepository->followTeamAction($user, $team);
-
-            if (isset($result['errors'])) {
-                return $this->render('follow/follow.html.twig', [
-                    'errors' => $result['errors'],
-                ]);
-            }
-        }
-
-        return $this->redirectToRoute('app_follow');
+        $followedTeams = $this->followRepository->getFollowedTeamsByUser($user);
+        
+        return $this->render('follow/follow.html.twig', [
+            'errors' => $result['errors'] ?? [],
+            'followed_teams' => $followedTeams,
+        ]);
     }
 
     #[Route('/followed-teams', name: 'app_follow')]
