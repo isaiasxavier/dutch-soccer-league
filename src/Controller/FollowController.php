@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Follow;
 use App\Repository\FollowRepository;
 use App\Repository\SeasonTeamStandingRepository;
 use App\Repository\StandingRepository;
@@ -31,38 +30,18 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
     }
 
     #[Route('/follow/{id}', name: 'app_follow_action')]
-    public function followTeam($id, ManagerRegistry $doctrine): Response
+    public function followTeam($id): Response
     {
         $user = $this->getUser();
-        $team = $this->teamRepository->find($id);
+        $team = $this->teamRepository->findTeamById($id);
 
         if ($user && $team) {
-            $followRepository = $doctrine->getRepository(Follow::class);
-            $existingFollow = $followRepository->findOneBy(['user' => $user, 'team' => $team]);
+            $result = $this->followRepository->followTeamAction($user, $team);
 
-            if (!$existingFollow) {
-                $follow = new Follow();
-                $follow->setUser($user);
-                $follow->setTeam($team);
-
-                $errors = $this->validator->validate($follow);
-                if (count($errors) > 0) {
-                    $followedTeams = $doctrine->getRepository(Follow::class)
-                        ->findBy(['user' => $user]);
-
-                    $teams = [];
-                    foreach ($followedTeams as $followed) {
-                        $teams[] = $followed->getTeam();
-                    }
-
-                    return $this->render('follow/follow.html.twig', [
-                        'errors' => $errors,
-                    ]);
-                }
-
-                $entityManager = $doctrine->getManager();
-                $entityManager->persist($follow);
-                $entityManager->flush();
+            if (isset($result['errors'])) {
+                return $this->render('follow/follow.html.twig', [
+                    'errors' => $result['errors'],
+                ]);
             }
         }
 
@@ -70,17 +49,13 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
     }
 
     #[Route('/followed-teams', name: 'app_follow')]
-    public function index(ManagerRegistry $doctrine): Response
+    public function index(): Response
     {
         $user = $this->getUser();
-        // Carrega todos os times seguidos pelo usuário
-        $followedTeams = $doctrine->getRepository(Follow::class)
-            ->findBy(['user' => $user]);
 
-        $teams = [];
-        foreach ($followedTeams as $follow) {
-            $teams[] = $follow->getTeam();
-        }
+        $followedTeams = $this->followRepository->getFollowedTeamIds($user);
+
+        $teams = $this->teamRepository->findTeamsByIds($followedTeams);
 
         return $this->render('follow/follow.html.twig', [
             'followed_teams' => $teams,
@@ -91,14 +66,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
     public function unfollow(int $id, ManagerRegistry $doctrine): RedirectResponse
     {
         $user = $this->getUser();
-        $follow = $doctrine->getRepository(Follow::class)
-            ->findOneBy(['user' => $user, 'team' => $id]);
 
-        if ($follow) {
-            $entityManager = $doctrine->getManager();
-            $entityManager->remove($follow);
-            $entityManager->flush();
-        }
+        $this->followRepository->unfollowTeam($user, $id);
 
         return $this->redirectToRoute('app_follow');
     }

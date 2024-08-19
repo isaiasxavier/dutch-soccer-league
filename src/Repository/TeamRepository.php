@@ -27,7 +27,12 @@ use Symfony\Component\HttpFoundation\Request;
     {
         return $this->find($id);
     }
-    
+
+    public function findTeamsByIds(array $ids): array
+    {
+        return $this->findBy(['id' => $ids]);
+    }
+
     public function findTeamsWithPaginationAndCountAndFollowers(Request $request, $user): array
     {
         $limit = $request->query->getInt('limit', 3);
