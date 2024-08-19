@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\FollowRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FollowRepository::class)]
 class Follow
@@ -15,10 +16,12 @@ class Follow
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?User $user = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
     private ?Team $team = null;
 
     public function getId(): ?int

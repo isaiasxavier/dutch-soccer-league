@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-
 use AllowDynamicProperties;
 use App\Repository\CoachRepository;
 use App\Repository\FollowRepository;
@@ -16,29 +15,6 @@ use Symfony\Component\Routing\Attribute\Route;
 
 #[AllowDynamicProperties] class TeamController extends AbstractController
 {
-    /*private $apiService;
-
-    public function __construct(ApiService $apiService)
-    {
-        $this->apiService = $apiService;
-    }
-
-    #[Route('/teams', name: 'app_teams')]
-    public function listTeams(Request $request): Response
-    {
-        $limit = $request->query->getInt('limit', 10);
-        $offset = $request->query->getInt('offset', 0);
-        $teams = $this->apiService->getTeams($limit, $offset);
-
-        $this->logger->info('Teams Data', ['teams' => $teams]);
-
-        return $this->render('team/list.html.twig', [
-            'teams' => $teams,
-            'limit' => $limit,
-            'offset' => $offset,
-        ]);
-    }*/
-    
     public function __construct(
         TeamRepository $teamRepository,
         CoachRepository $coachRepository,
@@ -69,7 +45,7 @@ use Symfony\Component\Routing\Attribute\Route;
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
-        
+
         return $this->render('team/detail.html.twig', [
             'team' => $team,
             'coach' => $coach,
@@ -79,6 +55,4 @@ use Symfony\Component\Routing\Attribute\Route;
             'offset' => $offset,
         ]);
     }
-    
-    
 }

@@ -34,7 +34,7 @@ class Competition
      */
     #[ORM\OneToMany(targetEntity: Season::class, mappedBy: 'competition')]
     private Collection $season;
-    
+
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Team $team = null;
@@ -115,16 +115,16 @@ class Competition
 
         return $this;
     }
-    
+
     public function getTeam(): ?Team
     {
         return $this->team;
     }
-    
+
     public function setTeam(?Team $team): static
     {
         $this->team = $team;
-        
+
         return $this;
     }
 

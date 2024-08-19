@@ -29,8 +29,7 @@ class HomepageController extends AbstractController
 
         // Buscar as standings da temporada atual
         $standings = $standingRepository->findBy(['season' => $season]);
-        
-        
+
         // Buscar os dados de SeasonTeamStanding relacionados às standings com paginação
         $seasonTeamStandings = $seasonTeamStandingRepository->createQueryBuilder('sts')
             ->where('sts.standing IN (:standings)')

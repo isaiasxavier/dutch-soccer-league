@@ -7,6 +7,17 @@
         <div class="shadow-md max-w-2xl bg-white p-6 rounded-lg shadow-md">
             <h1 class="text-3xl font-bold text-center mb-4">Teams Followed</h1>
             <table class="w-full bg-white border border-gray-200 rounded">
+
+                {% if errors is defined and errors|length > 0 %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for error in errors %}
+                                <li>{{ error.message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
                 <thead>
                 <tr class="bg-gray-200">
                     <th class="py-2 px-4 text-left">Team Name</th>
