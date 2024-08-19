@@ -20,7 +20,7 @@ class CompetitionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Competition::class);
     }
-    
+
     public function findByName(string $name): ?Competition
     {
         return $this->findOneBy(['name' => $name]);

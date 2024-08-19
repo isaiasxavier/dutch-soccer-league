@@ -19,11 +19,10 @@ class HomepageController extends AbstractController
         StandingRepository $standingRepository,
         SeasonTeamStandingRepository $seasonTeamStandingRepository,
     ): Response {
-        
         $competition = $competitionRepository->findByName('Eredivisie');
-        
+
         $season = $seasonRepository->findCurrentSeasonByCompetition($competition);
-        
+
         $standings = $standingRepository->findBySeason($season);
 
         $seasonTeamStandings = $seasonTeamStandingRepository->findByStandings($standings);

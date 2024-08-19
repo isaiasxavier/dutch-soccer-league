@@ -20,7 +20,7 @@ class StandingRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Standing::class);
     }
-    
+
     public function findBySeason($season): array
     {
         return $this->createQueryBuilder('s')

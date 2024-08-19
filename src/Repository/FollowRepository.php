@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use AllowDynamicProperties;
 use App\Entity\Follow;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,7 +15,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * @method Follow[]    findAll()
  * @method Follow[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-#[AllowDynamicProperties] class FollowRepository extends ServiceEntityRepository
+#[\AllowDynamicProperties] class FollowRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry, ValidatorInterface $validator)
     {

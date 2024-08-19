@@ -20,7 +20,7 @@ class SeasonTeamStandingRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, SeasonTeamStanding::class);
     }
-    
+
     public function findByStandings(array $standings): array
     {
         return $this->createQueryBuilder('sts')

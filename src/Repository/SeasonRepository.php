@@ -21,7 +21,7 @@ class SeasonRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Season::class);
     }
-    
+
     public function findCurrentSeasonByCompetition(Competition $competition): ?Season
     {
         return $this->findOneBy(['competition' => $competition]);
