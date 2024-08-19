@@ -1,5 +1,3 @@
-# Project Name
-
 This project was developed using the provided Symfony template with some customizations.
 
 ## Customizations
