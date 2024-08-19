@@ -228,7 +228,7 @@ class FetchDataCommand extends Command
         }
 
         $this->entityManager->flush();
-        $io->success('Fetched and saved team, competition and player table');
+        $io->success('Fetched and saved team, competition and player tables');
     }
 
     private function fetchAndSaveSeasons(SymfonyStyle $io): void
