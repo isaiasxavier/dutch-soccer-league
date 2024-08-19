@@ -28,6 +28,9 @@ use Symfony\Component\Routing\Attribute\Route;
 
         // Obtendo os times com paginação
         $teams = $this->teamRepository->findBy([], null, $limit, $offset);
+        
+        // Contando o número total de times
+        $totalTeams = $this->teamRepository->count([]);
 
         $followedTeams = $doctrine->getRepository(Follow::class)
             ->findBy(['user' => $user]);
@@ -41,6 +44,7 @@ use Symfony\Component\Routing\Attribute\Route;
             'teams' => $teams,
             'limit' => $limit,
             'offset' => $offset,
+            'total_teams' => $totalTeams,
             'followed_team_ids' => $followedTeamIds,
         ]);
     }

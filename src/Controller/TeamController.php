@@ -37,6 +37,14 @@ use Symfony\Component\Routing\Attribute\Route;
         $players = $this->playerRepository->findBy(['team' => $team]);
         $limit = $request->query->getInt('limit', 25);
         $offset = $request->query->getInt('offset', 0);
+        
+        // Contando o número total de partidas
+        $totalMatches = $this->gameMatchRepository->createQueryBuilder('gm')
+            ->select('count(gm.id)')
+            ->where('gm.homeTeamId = :teamId OR gm.awayTeamId = :teamId')
+            ->setParameter('teamId', $id)
+            ->getQuery()
+            ->getSingleScalarResult();
 
         $matches = $this->gameMatchRepository->createQueryBuilder('gm')
             ->where('gm.homeTeamId = :teamId OR gm.awayTeamId = :teamId')
@@ -52,6 +60,7 @@ use Symfony\Component\Routing\Attribute\Route;
             'squad' => $players,
             'matches' => $matches,
             'limit' => $limit,
+            'total_matches' => $totalMatches,
             'offset' => $offset,
         ]);
     }

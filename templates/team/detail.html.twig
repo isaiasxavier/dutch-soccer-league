@@ -83,10 +83,12 @@
                             Previous
                         </a>
                     {% endif %}
-                    <a href="{{ path('app_team_detail', {id: team.id, limit: limit, offset: offset + limit}) }}"
-                       class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">
-                        Next
-                    </a>
+                    {% if offset + limit < total_matches %}
+                        <a href="{{ path('app_team_detail', {id: team.id, limit: limit, offset: offset + limit}) }}"
+                           class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">
+                            Next
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
