@@ -36,7 +36,7 @@
                     {% endif %}
                 </li>
                 <li>
-                    <a href="{{ app.user ? 'logout' : 'login' }}" class="hover:underline"
+                    <a href="{{ app.user ? path('app_redirect_logout') : path('app_login') }}" class="hover:underline"
                        @click="isOpen = false">
                         {{ app.user ? 'Logout' : 'Login' }}
                     </a>
