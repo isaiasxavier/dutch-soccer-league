@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use AllowDynamicProperties;
 use App\Entity\Follow;
 use App\Repository\TeamRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -11,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[AllowDynamicProperties] class DashboardController extends AbstractController
+#[\AllowDynamicProperties] class DashboardController extends AbstractController
 {
     public function __construct(TeamRepository $teamRepository)
     {
@@ -28,7 +27,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
         // Obtendo os times com paginação
         $teams = $this->teamRepository->findBy([], null, $limit, $offset);
-        
+
         // Contando o número total de times
         $totalTeams = $this->teamRepository->count([]);
 

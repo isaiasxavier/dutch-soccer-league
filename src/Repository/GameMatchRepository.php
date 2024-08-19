@@ -21,28 +21,24 @@ class GameMatchRepository extends ServiceEntityRepository
         parent::__construct($registry, GameMatch::class);
     }
 
-    //    /**
-    //     * @return GameMatchBKUP[] Returns an array of GameMatchBKUP objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('g.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function countMatchesByTeamId($teamId)
+    {
+        return $this->createQueryBuilder('gm')
+            ->select('count(gm.id)')
+            ->where('gm.homeTeamId = :teamId OR gm.awayTeamId = :teamId')
+            ->setParameter('teamId', $teamId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
-    //    public function findOneBySomeField($value): ?GameMatchBKUP
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findMatchesByTeamId($teamId, $limit, $offset)
+    {
+        return $this->createQueryBuilder('gm')
+            ->where('gm.homeTeamId = :teamId OR gm.awayTeamId = :teamId')
+            ->setParameter('teamId', $teamId)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

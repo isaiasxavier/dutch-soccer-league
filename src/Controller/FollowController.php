@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use AllowDynamicProperties;
 use App\Entity\Follow;
 use App\Repository\FollowRepository;
 use App\Repository\SeasonTeamStandingRepository;
@@ -15,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[AllowDynamicProperties] class FollowController extends AbstractController
+#[\AllowDynamicProperties] class FollowController extends AbstractController
 {
     public function __construct(
         TeamRepository $teamRepository,

@@ -42,7 +42,7 @@ class FetchDataCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        
+
         $this->fetchAndSaveTeamsCompetitionPlayers($io);
         $this->fetchAndSaveSeasons($io);
         $this->fetchAndSaveStandings($io);

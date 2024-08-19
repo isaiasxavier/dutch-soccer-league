@@ -8,6 +8,7 @@ use App\Repository\FollowRepository;
 use App\Repository\GameMatchRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\TeamRepository;
+use App\Service\PaginationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,47 +22,35 @@ use Symfony\Component\Routing\Attribute\Route;
         PlayerRepository $playerRepository,
         GameMatchRepository $gameMatchRepository,
         FollowRepository $followRepository,
+        PaginationService $paginationService,
     ) {
         $this->teamRepository = $teamRepository;
         $this->coachRepository = $coachRepository;
         $this->playerRepository = $playerRepository;
         $this->gameMatchRepository = $gameMatchRepository;
         $this->followRepository = $followRepository;
-    }
+        $this->paginationService = $paginationService;}
 
     #[Route('/teams/{id}', name: 'app_team_detail')]
     public function teamDetail($id, Request $request): Response
     {
-        $team = $this->teamRepository->find($id);
-        $coach = $this->coachRepository->findOneBy(['team' => $team]);
-        $players = $this->playerRepository->findBy(['team' => $team]);
-        $limit = $request->query->getInt('limit', 25);
-        $offset = $request->query->getInt('offset', 0);
-        
-        // Contando o número total de partidas
-        $totalMatches = $this->gameMatchRepository->createQueryBuilder('gm')
-            ->select('count(gm.id)')
-            ->where('gm.homeTeamId = :teamId OR gm.awayTeamId = :teamId')
-            ->setParameter('teamId', $id)
-            ->getQuery()
-            ->getSingleScalarResult();
+        $team = $this->teamRepository->findTeamById($id);
+        $coach = $this->coachRepository->findCoachByTeamId($id);
+        $players = $this->playerRepository->findPlayerByTeamId($id);
+        $pagination = $this->paginationService->getPaginationParameters($request);
 
-        $matches = $this->gameMatchRepository->createQueryBuilder('gm')
-            ->where('gm.homeTeamId = :teamId OR gm.awayTeamId = :teamId')
-            ->setParameter('teamId', $id)
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
+        $totalMatches = $this->gameMatchRepository->countMatchesByTeamId($id);
+        $matches = $this->gameMatchRepository->findMatchesByTeamId($id, $pagination['limit'], $pagination['offset']);
 
         return $this->render('team/detail.html.twig', [
             'team' => $team,
             'coach' => $coach,
             'squad' => $players,
             'matches' => $matches,
-            'limit' => $limit,
+            'limit' => $pagination['limit'],
+            'offset' => $pagination['offset'],
             'total_matches' => $totalMatches,
-            'offset' => $offset,
+            
         ]);
     }
 }
