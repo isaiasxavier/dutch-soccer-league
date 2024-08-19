@@ -1,11 +1,10 @@
-This project was developed using the provided Symfony template with some customizations.
+This project was developed using the provided Symfony template.
 
 ## Customizations
 
 1. **Tailwind CSS**:
    ```bash
    php bin/console tailwind:build -w
-    
 
 ## Environment Setup
 
