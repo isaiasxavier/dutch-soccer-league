@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use AllowDynamicProperties;
 use App\Repository\CoachRepository;
 use App\Repository\FollowRepository;
 use App\Repository\GameMatchRepository;
@@ -14,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[AllowDynamicProperties] class TeamController extends AbstractController
+#[\AllowDynamicProperties] class TeamController extends AbstractController
 {
     public function __construct(
         TeamRepository $teamRepository,
@@ -29,7 +28,8 @@ use Symfony\Component\Routing\Attribute\Route;
         $this->playerRepository = $playerRepository;
         $this->gameMatchRepository = $gameMatchRepository;
         $this->followRepository = $followRepository;
-        $this->paginationService = $paginationService;}
+        $this->paginationService = $paginationService;
+    }
 
     #[Route('/teams/{id}', name: 'app_team_detail')]
     public function teamDetail($id, Request $request): Response
@@ -50,7 +50,6 @@ use Symfony\Component\Routing\Attribute\Route;
             'limit' => $pagination['limit'],
             'offset' => $pagination['offset'],
             'total_matches' => $totalMatches,
-            
         ]);
     }
 }
