@@ -20,29 +20,13 @@ class StandingRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Standing::class);
     }
-
-    //    /**
-    //     * @return Standing[] Returns an array of Standing objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Standing
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    
+    public function findBySeason($season): array
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.season = :season')
+            ->setParameter('season', $season)
+            ->getQuery()
+            ->getResult();
+    }
 }

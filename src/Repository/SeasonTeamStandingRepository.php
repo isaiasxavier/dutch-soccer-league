@@ -20,29 +20,13 @@ class SeasonTeamStandingRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, SeasonTeamStanding::class);
     }
-
-    //    /**
-    //     * @return SeasonTeamStanding[] Returns an array of SeasonTeamStanding objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?SeasonTeamStanding
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    
+    public function findByStandings(array $standings): array
+    {
+        return $this->createQueryBuilder('sts')
+            ->where('sts.standing IN (:standings)')
+            ->setParameter('standings', $standings)
+            ->getQuery()
+            ->getResult();
+    }
 }
