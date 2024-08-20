@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use AllowDynamicProperties;
 use App\Entity\Coach;
 use App\Entity\Competition;
 use App\Entity\GameMatch;
@@ -27,7 +28,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-#[AsCommand(
+#[AllowDynamicProperties] #[AsCommand(
     name: 'FetchDataCommand',
     description: 'Add a short description for your command',
 )]
@@ -35,13 +36,13 @@ class FetchDataCommand extends Command
 {
     private ApiService $apiService;
     private EntityManagerInterface $entityManager;
-
+    
     public function __construct(ApiService $apiService, EntityManagerInterface $entityManager)
     {
         parent::__construct();
         $this->apiService = $apiService;
         $this->entityManager = $entityManager;
-    }
+        }
 
     protected function configure(): void
     {
@@ -62,14 +63,38 @@ class FetchDataCommand extends Command
 
         $this->fetchAndSaveTeam($io);
         $this->fetchAndSaveCompetition($io);
+        $this->fetchAndSaveSeason($io);
         $this->fetchAndSaveCoach($io);
         $this->fetchAndSavePlayers($io);
-        $this->fetchAndSaveSeasons($io);
         $this->fetchAndSaveStandings($io);
         $this->fetchAndSaveSeasonTeamStandings($io);
         $this->fetchAndSaveGameMatches($io);
 
         return Command::SUCCESS;
+    }
+    
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws ORMException
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    private function fetchAndSaveTeam(SymfonyStyle $io): void
+    {
+        $teams = $this->apiService->getTeams();
+        
+        foreach ($teams as $teamData) {
+            try {
+                $this->saveTeam($teamData);
+            } catch (Exception $error) {
+                $io->error('Error saving team: '.$error->getMessage());
+            }
+        }
+        
+        $this->entityManager->flush();
+        $io->success('Fetched and saved team table');
     }
     
     /**
@@ -103,27 +128,29 @@ class FetchDataCommand extends Command
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    private function fetchAndSaveTeam(SymfonyStyle $io): void
+    private function fetchAndSaveCompetition(SymfonyStyle $io): void
     {
         $teams = $this->apiService->getTeams();
         
         foreach ($teams as $teamData) {
             try {
-                $this->saveTeam($teamData);
-            } catch (Exception $e) {
-                $io->error('Error saving team: '.$e->getMessage());
+                foreach ($teamData['runningCompetitions'] as $competitionData) {
+                    $this->saveCompetition($competitionData);
+                }
+            } catch (Exception $error) {
+                $io->error('Error saving competition: '.$error->getMessage());
             }
         }
         
         $this->entityManager->flush();
-        $io->success('Fetched and saved team table');
+        $io->success('Fetched and saved competition table');
     }
     
     /**
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    private function saveCompetition(array $competitionData): Competition
+    private function saveCompetition(array $competitionData): void
     {
         $competition = $this->entityManager->find(Competition::class, $competitionData['id']) ?? new Competition();
         $competition->setId($competitionData['id']);
@@ -133,8 +160,6 @@ class FetchDataCommand extends Command
         $competition->setEmblem($competitionData['emblem']);
         
         $this->entityManager->persist($competition);
-
-        return $competition;
     }
     
     /**
@@ -145,22 +170,71 @@ class FetchDataCommand extends Command
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    private function fetchAndSaveCompetition(SymfonyStyle $io): void
+    private function fetchAndSaveSeason(SymfonyStyle $io): void
+    {
+        $standings = $this->apiService->getStanding();
+        
+            try {
+                $competitionData = $standings['competition'];
+                $competition = $this->entityManager->getRepository(Competition::class)->find($competitionData['id']);
+                
+                if ($competition) {
+                    $seasonData = $standings['season'];
+                    $this->saveSeason($seasonData, $competition);
+                } else {
+                    $io->error('Competition not found for the season.');
+                }
+            } catch (Exception $error) {
+                $io->error('Error saving season: '.$error->getMessage());
+            }
+            
+        $this->entityManager->flush();
+        $io->success('Fetched and saved season table.');
+    }
+    
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     * @throws Exception
+     */
+    private function saveSeason(array $seasonData, Competition $competition): void
+    {
+        $season = $this->entityManager->find(Season::class, $seasonData['id']) ?? new Season();
+        $season->setId($seasonData['id']);
+        $season->setStartDate(new DateTime($seasonData['startDate']));
+        $season->setEndDate(new DateTime($seasonData['endDate']));
+        $season->setCurrentMatchday($seasonData['currentMatchday']);
+        $season->setWinner($seasonData['winner']);
+        $season->setCompetition($competition);
+        
+        $this->entityManager->persist($season);
+    }
+    
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ORMException
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    private function fetchAndSavePlayers(SymfonyStyle $io): void
     {
         $teams = $this->apiService->getTeams();
         
         foreach ($teams as $teamData) {
             try {
-                foreach ($teamData['runningCompetitions'] as $competitionData) {
-                    $this->saveCompetition($competitionData);
+                $team = $this->entityManager->find(Team::class, $teamData['id']);
+                foreach ($teamData['squad'] as $playerData) {
+                    $this->savePlayer($playerData, $team);
                 }
-            } catch (Exception $e) {
-                $io->error('Error saving competition: '.$e->getMessage());
+            } catch (Exception $error) {
+                $io->error('Error saving players: '.$error->getMessage());
             }
         }
         
         $this->entityManager->flush();
-        $io->success('Fetched and saved competition table');
+        $io->success('Fetched and saved player table');
     }
     
     /**
@@ -183,77 +257,40 @@ class FetchDataCommand extends Command
     
     /**
      * @throws TransportExceptionInterface
-     * @throws ORMException
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
-     */
-    private function fetchAndSavePlayers(SymfonyStyle $io): void
-    {
-        $teams = $this->apiService->getTeams();
-        
-        foreach ($teams as $teamData) {
-            try {
-                $team = $this->entityManager->find(Team::class, $teamData['id']);
-                foreach ($teamData['squad'] as $playerData) {
-                    $this->savePlayer($playerData, $team);
-                }
-            } catch (Exception $e) {
-                $io->error('Error saving players: '.$e->getMessage());
-            }
-        }
-        
-        $this->entityManager->flush();
-        $io->success('Fetched and saved player table');
-    }
-    
-    /**
-     * @throws OptimisticLockException
-     * @throws ORMException
-     * @throws Exception
-     */
-    private function saveSeason(array $seasonData, Competition $competition): Season
-    {
-        $season = $this->entityManager->find(Season::class, $seasonData['id']) ?? new Season();
-        $season->setId($seasonData['id']);
-        $season->setStartDate(new DateTime($seasonData['startDate']));
-        $season->setEndDate(new DateTime($seasonData['endDate']));
-        $season->setCurrentMatchday($seasonData['currentMatchday']);
-        $season->setWinner($seasonData['winner']);
-        $season->setCompetition($competition);
-        
-        $this->entityManager->persist($season);
-        
-        return $season;
-    }
-    
-    /**
-     * @throws TransportExceptionInterface
      * @throws ServerExceptionInterface
      * @throws ORMException
      * @throws RedirectionExceptionInterface
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    private function fetchAndSaveSeasons(SymfonyStyle $io): void
+    private function fetchAndSaveStandings(SymfonyStyle $io): void
     {
         $standings = $this->apiService->getStanding();
         
-        foreach ($standings['standings'] as $ignored) {
+        foreach ($standings['standings'] as $standingData) {
             try {
                 $competitionData = $standings['competition'];
-                $competition = $this->saveCompetition($competitionData);
+                $competition = $this->entityManager->getRepository(Competition::class)->find($competitionData['id']);
                 
-                $seasonData = $standings['season'];
-                $this->saveSeason($seasonData, $competition);
-            } catch (Exception $e) {
-                $io->error('Error saving season: '.$e->getMessage());
+                if ($competition) {
+                    $seasonData = $standings['season'];
+                    $season = $this->entityManager->getRepository(Season::class)->find($seasonData['id']);
+                    
+                    if ($season) {
+                        $this->saveStanding($standingData, $season);
+                    } else {
+                        $io->error('Season not found for the standings.');
+                    }
+                } else {
+                    $io->error('Competition not found for the standings.');
+                }
+            } catch (Exception $error) {
+                $io->error('Error saving standing: ' . $error->getMessage());
             }
         }
         
         $this->entityManager->flush();
-        $io->success('Fetched and saved season table.');
+        $io->success('Fetched and saved standing table.');
     }
     
     private function saveStanding(array $standingData, Season $season): void
@@ -278,23 +315,29 @@ class FetchDataCommand extends Command
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    private function fetchAndSaveStandings(SymfonyStyle $io): void
+    private function fetchAndSaveSeasonTeamStandings(SymfonyStyle $io): void
     {
         $standings = $this->apiService->getStanding();
         
         foreach ($standings['standings'] as $standingData) {
             try {
-                $seasonData = $standings['season'];
-                $season = $this->saveSeason($seasonData, $this->saveCompetition($standings['competition']));
+                $standing = $this->entityManager->getRepository(Standing::class)->findOneBy([
+                    'stage' => $standingData['stage'],
+                    'type' => $standingData['type'],
+                ]);
                 
-                $this->saveStanding($standingData, $season);
-            } catch (Exception $e) {
-                $io->error('Error saving standing: '.$e->getMessage());
+                if ($standing) {
+                    foreach ($standingData['table'] as $teamStandingData) {
+                        $this->saveSeasonTeamStanding($teamStandingData, $standing);
+                    }
+                }
+            } catch (Exception $error) {
+                $io->error('Error saving season team standings: '.$error->getMessage());
             }
         }
         
         $this->entityManager->flush();
-        $io->success('Fetched and saved standing table.');
+        $io->success('Fetched and saved season_team_standing table.');
     }
     
     /**
@@ -338,29 +381,21 @@ class FetchDataCommand extends Command
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    private function fetchAndSaveSeasonTeamStandings(SymfonyStyle $io): void
+    private function fetchAndSaveCoach(SymfonyStyle $io): void
     {
-        $standings = $this->apiService->getStanding();
+        $teams = $this->apiService->getTeams();
         
-        foreach ($standings['standings'] as $standingData) {
+        foreach ($teams as $teamData) {
             try {
-                $standing = $this->entityManager->getRepository(Standing::class)->findOneBy([
-                    'stage' => $standingData['stage'],
-                    'type' => $standingData['type'],
-                ]);
-                
-                if ($standing) {
-                    foreach ($standingData['table'] as $teamStandingData) {
-                        $this->saveSeasonTeamStanding($teamStandingData, $standing);
-                    }
-                }
-            } catch (Exception $e) {
-                $io->error('Error saving season team standings: '.$e->getMessage());
+                $team = $this->entityManager->find(Team::class, $teamData['id']);
+                $this->saveCoach($teamData['coach'], $team);
+            } catch (Exception $error) {
+                $io->error('Error saving coach: '.$error->getMessage());
             }
         }
         
         $this->entityManager->flush();
-        $io->success('Fetched and saved season_team_standing table.');
+        $io->success('Fetched and saved coach table');
     }
     
     /**
@@ -391,21 +426,20 @@ class FetchDataCommand extends Command
      * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    private function fetchAndSaveCoach(SymfonyStyle $io): void
+    private function fetchAndSaveGameMatches(SymfonyStyle $io): void
     {
-        $teams = $this->apiService->getTeams();
+        $matches = $this->apiService->getMatchesDed();
         
-        foreach ($teams as $teamData) {
+        foreach ($matches['matches'] as $matchData) {
             try {
-                $team = $this->entityManager->find(Team::class, $teamData['id']);
-                $this->saveCoach($teamData['coach'], $team);
-            } catch (Exception $e) {
-                $io->error('Error saving coach: '.$e->getMessage());
+                $this->saveGameMatch($matchData);
+            } catch (Exception $error) {
+                $io->error('Error saving game match: '.$error->getMessage());
             }
         }
         
         $this->entityManager->flush();
-        $io->success('Fetched and saved coach table');
+        $io->success('Fetched and saved game_match table.');
     }
     
     /**
@@ -439,42 +473,5 @@ class FetchDataCommand extends Command
 
         $this->entityManager->persist($gameMatch);
     }
-    
-    /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws ORMException
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
-     */
-    private function fetchAndSaveGameMatches(SymfonyStyle $io): void
-    {
-        $matches = $this->apiService->getMatchesDed();
-        
-        foreach ($matches['matches'] as $matchData) {
-            try {
-                $this->saveGameMatch($matchData);
-            } catch (Exception $e) {
-                $io->error('Error saving game match: '.$e->getMessage());
-            }
-        }
-        
-        $this->entityManager->flush();
-        $io->success('Fetched and saved game_match table.');
-    }
-    
-    
-    
-    
-    
-    
-
-    
-
-   
-
-    
-
     
 }
