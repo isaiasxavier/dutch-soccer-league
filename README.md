@@ -93,8 +93,6 @@ This Symfony application fetches and stores data from an external API into a rel
     - `code`
     - `type`
     - `emblem`
-- **Relationships**:
-    - `team` (Many-to-One with `Team`)
 
 ### **GameMatch**
 
@@ -174,8 +172,6 @@ This Symfony application fetches and stores data from an external API into a rel
     - `email`
     - `roles`
     - `password`
-- Relationships:
-    - None
 
 ### **Follow**
 
