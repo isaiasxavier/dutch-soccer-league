@@ -34,9 +34,6 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 )]
 class FetchDataCommand extends Command
 {
-    private ApiService $apiService;
-    private EntityManagerInterface $entityManager;
-    
     public function __construct(ApiService $apiService, EntityManagerInterface $entityManager)
     {
         parent::__construct();
@@ -296,8 +293,7 @@ class FetchDataCommand extends Command
     private function saveStanding(array $standingData, Season $season): void
     {
         $standing = $this->entityManager->getRepository(Standing::class)->findOneBy([
-            'stage' => $standingData['stage'],
-            'type' => $standingData['type'],
+            'season' => $season
         ]) ?? new Standing();
         $standing->setStage($standingData['stage']);
         $standing->setType($standingData['type']);
@@ -319,11 +315,13 @@ class FetchDataCommand extends Command
     {
         $standings = $this->apiService->getStanding();
         
+        $seasonData = $standings['season'];
+        $season = $this->entityManager->getRepository(Season::class)->find($seasonData['id']);
+      
         foreach ($standings['standings'] as $standingData) {
             try {
                 $standing = $this->entityManager->getRepository(Standing::class)->findOneBy([
-                    'stage' => $standingData['stage'],
-                    'type' => $standingData['type'],
+                    'season' => $season,
                 ]);
                 
                 if ($standing) {
@@ -344,17 +342,11 @@ class FetchDataCommand extends Command
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    private function saveSeasonTeamStanding(array $teamStandingData, Standing $standing): void
+    private function saveSeasonTeamStanding($teamStandingData, Standing $standing): void
     {
-        if (isset($teamStandingData['team'])) {
-            $teamData = $teamStandingData['team'];
+        $teamData = $teamStandingData['team'];
             
-            $team = $this->entityManager->find(Team::class, $teamData['id']);
-            if (!$team) {
-                $team->setAddress($teamData['address'] ?? null);
-                $this->entityManager->persist($team);
-            }
-        }
+        $team = $this->entityManager->find(Team::class, $teamData['id']);
         
         $seasonTeamStanding = new SeasonTeamStanding();
         $seasonTeamStanding->setPosition($teamStandingData['position']);
