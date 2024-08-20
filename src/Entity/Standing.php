@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\StandingRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -11,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Standing
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue()]
+    #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -36,7 +35,6 @@ class Standing
 
     public function __construct()
     {
-        $this->season_team_standing = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -91,34 +89,5 @@ class Standing
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, SeasonTeamStanding>
-     */
-    public function getSeasonTeamStanding(): Collection
-    {
-        return $this->season_team_standing;
-    }
-
-    public function addSeasonTeamStanding(SeasonTeamStanding $seasonTeamStanding): static
-    {
-        if (!$this->season_team_standing->contains($seasonTeamStanding)) {
-            $this->season_team_standing->add($seasonTeamStanding);
-            $seasonTeamStanding->setStanding($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSeasonTeamStanding(SeasonTeamStanding $seasonTeamStanding): static
-    {
-        if ($this->season_team_standing->removeElement($seasonTeamStanding)) {
-            // set the owning side to null (unless already changed)
-            if ($seasonTeamStanding->getStanding() === $this) {
-                $seasonTeamStanding->setStanding(null);
-            }
-        }
-
-        return $this;
-    }
+    
 }

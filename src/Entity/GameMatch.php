@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\GameMatchRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -24,7 +25,7 @@ class GameMatch
     private ?string $stage = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $lastUpdated = null;
+    private ?DateTimeInterface $lastUpdated = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $homeTeamId = null;
@@ -65,7 +66,7 @@ class GameMatch
     private ?Team $awayTeam = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $dateGame = null;
+    private ?DateTimeInterface $dateGame = null;
 
     public function getId(): ?int
     {
@@ -115,12 +116,12 @@ class GameMatch
         return $this;
     }
 
-    public function getLastUpdated(): ?\DateTimeInterface
+    public function getLastUpdated(): ?DateTimeInterface
     {
         return $this->lastUpdated;
     }
 
-    public function setLastUpdated(?\DateTimeInterface $lastUpdated): GameMatch
+    public function setLastUpdated(?DateTimeInterface $lastUpdated): GameMatch
     {
         $this->lastUpdated = $lastUpdated;
 
@@ -271,12 +272,12 @@ class GameMatch
         return $this;
     }
 
-    public function getDateGame(): ?\DateTimeInterface
+    public function getDateGame(): ?DateTimeInterface
     {
         return $this->dateGame;
     }
 
-    public function setDateGame(?\DateTimeInterface $dateGame): static
+    public function setDateGame(?DateTimeInterface $dateGame): static
     {
         $this->dateGame = $dateGame;
 

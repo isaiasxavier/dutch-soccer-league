@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\SeasonRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -39,7 +38,6 @@ class Season
 
     public function __construct()
     {
-        $this->standing = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -113,34 +111,5 @@ class Season
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, Standing>
-     */
-    public function getStanding(): Collection
-    {
-        return $this->standing;
-    }
-
-    public function addStanding(Standing $standing): static
-    {
-        if (!$this->standing->contains($standing)) {
-            $this->standing->add($standing);
-            $standing->setSeason($this);
-        }
-
-        return $this;
-    }
-
-    public function removeStanding(Standing $standing): static
-    {
-        if ($this->standing->removeElement($standing)) {
-            // set the owning side to null (unless already changed)
-            if ($standing->getSeason() === $this) {
-                $standing->setSeason(null);
-            }
-        }
-
-        return $this;
-    }
+    
 }

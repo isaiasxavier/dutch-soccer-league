@@ -2,18 +2,18 @@
 
 namespace App\Controller;
 
+use AllowDynamicProperties;
 use App\Repository\FollowRepository;
 use App\Repository\SeasonTeamStandingRepository;
 use App\Repository\StandingRepository;
 use App\Repository\TeamRepository;
 use App\Validator\FollowValidator;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[\AllowDynamicProperties] class FollowController extends AbstractController
+#[AllowDynamicProperties] class FollowController extends AbstractController
 {
     public function __construct(
         TeamRepository $teamRepository,
@@ -61,7 +61,7 @@ use Symfony\Component\Routing\Attribute\Route;
     }
 
     #[Route('/unfollow/{id}', name: 'app_unfollow')]
-    public function unfollow(int $id, ManagerRegistry $doctrine): RedirectResponse
+    public function unfollow(int $id): RedirectResponse
     {
         $user = $this->getUser();
 

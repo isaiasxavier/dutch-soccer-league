@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use AllowDynamicProperties;
 use App\Repository\CoachRepository;
 use App\Repository\FollowRepository;
 use App\Repository\GameMatchRepository;
@@ -13,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[\AllowDynamicProperties]
+#[AllowDynamicProperties]
 class TeamController extends AbstractController
 {
     public function __construct(

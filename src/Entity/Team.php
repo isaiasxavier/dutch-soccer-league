@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\TeamRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -42,7 +42,7 @@ class Team
     private ?string $venue = null;
 
     #[ORM\Column(type: 'datetime')]
-    private ?\DateTimeInterface $lastUpdated = null;
+    private ?DateTimeInterface $lastUpdated = null;
 
     /**
      * @var Collection<int, SeasonTeamStanding>
@@ -58,8 +58,6 @@ class Team
 
     public function __construct()
     {
-        $this->season_team_standing = new ArrayCollection();
-        $this->gameMatch = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -182,12 +180,12 @@ class Team
         return $this;
     }
 
-    public function getLastUpdated(): ?\DateTimeInterface
+    public function getLastUpdated(): ?DateTimeInterface
     {
         return $this->lastUpdated;
     }
 
-    public function setLastUpdated(?\DateTimeInterface $lastUpdated): static
+    public function setLastUpdated(?DateTimeInterface $lastUpdated): static
     {
         $this->lastUpdated = $lastUpdated;
 
