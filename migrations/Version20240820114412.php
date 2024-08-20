@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240818143331 extends AbstractMigration
+final class Version20240820114412 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,7 +21,8 @@ final class Version20240818143331 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE coach (id INT NOT NULL, team_id INT NOT NULL, first_name VARCHAR(255) NOT NULL, lastname VARCHAR(255) NOT NULL, date DATE NOT NULL, nationality VARCHAR(255) NOT NULL, contract_start VARCHAR(255) NOT NULL, contract_until VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_3F596DCC296CD8AE (team_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE competition (id INT NOT NULL, team_id INT NOT NULL, data JSON NOT NULL, name VARCHAR(255) NOT NULL, code VARCHAR(10) NOT NULL, type VARCHAR(50) NOT NULL, emblem VARCHAR(255) DEFAULT NULL, INDEX IDX_B50A2CB1296CD8AE (team_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE competition (id INT NOT NULL, data JSON NOT NULL, name VARCHAR(255) NOT NULL, code VARCHAR(10) NOT NULL, type VARCHAR(50) NOT NULL, emblem VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE follow (id INT AUTO_INCREMENT NOT NULL, user_id INT NOT NULL, team_id INT NOT NULL, INDEX IDX_68344470A76ED395 (user_id), INDEX IDX_68344470296CD8AE (team_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE game_match (id INT AUTO_INCREMENT NOT NULL, home_team_id INT DEFAULT NULL, away_team_id INT DEFAULT NULL, status VARCHAR(50) DEFAULT NULL, matchday INT DEFAULT NULL, stage VARCHAR(50) DEFAULT NULL, last_updated DATETIME DEFAULT NULL, home_team_score_full_time INT DEFAULT NULL, away_team_score_full_time INT DEFAULT NULL, home_team_score_half_time INT DEFAULT NULL, away_team_score_half_time INT DEFAULT NULL, score_winner VARCHAR(50) DEFAULT NULL, score_duration VARCHAR(50) DEFAULT NULL, referee_id INT DEFAULT NULL, referee_name VARCHAR(255) DEFAULT NULL, date_game DATETIME DEFAULT NULL, INDEX IDX_4868BC8A9C4C13F6 (home_team_id), INDEX IDX_4868BC8A45185D02 (away_team_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE player (id INT NOT NULL, team_id INT NOT NULL, name VARCHAR(255) NOT NULL, position VARCHAR(100) NOT NULL, date DATE NOT NULL, nationality VARCHAR(255) NOT NULL, INDEX IDX_98197A65296CD8AE (team_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE season (id INT NOT NULL, competition_id INT NOT NULL, start_date DATE NOT NULL, end_date DATE NOT NULL, current_matchday INT NOT NULL, winner VARCHAR(255) DEFAULT NULL, INDEX IDX_F0E45BA97B39D312 (competition_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -31,7 +32,8 @@ final class Version20240818143331 extends AbstractMigration
         $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, email VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_IDENTIFIER_EMAIL (email), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE messenger_messages (id BIGINT AUTO_INCREMENT NOT NULL, body LONGTEXT NOT NULL, headers LONGTEXT NOT NULL, queue_name VARCHAR(190) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', available_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', delivered_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_75EA56E0FB7336F0 (queue_name), INDEX IDX_75EA56E0E3BD61CE (available_at), INDEX IDX_75EA56E016BA31DB (delivered_at), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE coach ADD CONSTRAINT FK_3F596DCC296CD8AE FOREIGN KEY (team_id) REFERENCES team (id)');
-        $this->addSql('ALTER TABLE competition ADD CONSTRAINT FK_B50A2CB1296CD8AE FOREIGN KEY (team_id) REFERENCES team (id)');
+        $this->addSql('ALTER TABLE follow ADD CONSTRAINT FK_68344470A76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
+        $this->addSql('ALTER TABLE follow ADD CONSTRAINT FK_68344470296CD8AE FOREIGN KEY (team_id) REFERENCES team (id)');
         $this->addSql('ALTER TABLE game_match ADD CONSTRAINT FK_4868BC8A9C4C13F6 FOREIGN KEY (home_team_id) REFERENCES team (id)');
         $this->addSql('ALTER TABLE game_match ADD CONSTRAINT FK_4868BC8A45185D02 FOREIGN KEY (away_team_id) REFERENCES team (id)');
         $this->addSql('ALTER TABLE player ADD CONSTRAINT FK_98197A65296CD8AE FOREIGN KEY (team_id) REFERENCES team (id)');
@@ -45,7 +47,8 @@ final class Version20240818143331 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE coach DROP FOREIGN KEY FK_3F596DCC296CD8AE');
-        $this->addSql('ALTER TABLE competition DROP FOREIGN KEY FK_B50A2CB1296CD8AE');
+        $this->addSql('ALTER TABLE follow DROP FOREIGN KEY FK_68344470A76ED395');
+        $this->addSql('ALTER TABLE follow DROP FOREIGN KEY FK_68344470296CD8AE');
         $this->addSql('ALTER TABLE game_match DROP FOREIGN KEY FK_4868BC8A9C4C13F6');
         $this->addSql('ALTER TABLE game_match DROP FOREIGN KEY FK_4868BC8A45185D02');
         $this->addSql('ALTER TABLE player DROP FOREIGN KEY FK_98197A65296CD8AE');
@@ -55,6 +58,7 @@ final class Version20240818143331 extends AbstractMigration
         $this->addSql('ALTER TABLE standing DROP FOREIGN KEY FK_619A8AD84EC001D1');
         $this->addSql('DROP TABLE coach');
         $this->addSql('DROP TABLE competition');
+        $this->addSql('DROP TABLE follow');
         $this->addSql('DROP TABLE game_match');
         $this->addSql('DROP TABLE player');
         $this->addSql('DROP TABLE season');

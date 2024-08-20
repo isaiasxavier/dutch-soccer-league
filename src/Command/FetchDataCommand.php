@@ -80,11 +80,7 @@ class FetchDataCommand extends Command
         $competition->setCode($competitionData['code']);
         $competition->setType($competitionData['type']);
         $competition->setEmblem($competitionData['emblem']);
-
-        if ($team) {
-            $competition->setTeam($team);
-        }
-
+        
         $this->entityManager->persist($competition);
 
         return $competition;
