@@ -317,7 +317,7 @@ class FetchDataCommand extends Command
         
         $seasonData = $standings['season'];
         $season = $this->entityManager->getRepository(Season::class)->find($seasonData['id']);
-      
+        
         foreach ($standings['standings'] as $standingData) {
             try {
                 $standing = $this->entityManager->getRepository(Standing::class)->findOneBy([
@@ -326,7 +326,7 @@ class FetchDataCommand extends Command
                 
                 if ($standing) {
                     foreach ($standingData['table'] as $teamStandingData) {
-                        $this->saveSeasonTeamStanding($teamStandingData, $standing);
+                        $this->saveSeasonTeamStanding($teamStandingData, $standing, $season);
                     }
                 }
             } catch (Exception $error) {
@@ -342,13 +342,17 @@ class FetchDataCommand extends Command
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    private function saveSeasonTeamStanding($teamStandingData, Standing $standing): void
+    private function saveSeasonTeamStanding($teamStandingData, Standing $standing, Season $season): void
     {
         $teamData = $teamStandingData['team'];
-            
+        
         $team = $this->entityManager->find(Team::class, $teamData['id']);
         
-        $seasonTeamStanding = new SeasonTeamStanding();
+        $seasonTeamStanding = $this->entityManager->getRepository(SeasonTeamStanding::class)->findOneBy([
+            'standing' => $standing,
+            'team' => $team,
+        ]) ?? new SeasonTeamStanding();
+        
         $seasonTeamStanding->setPosition($teamStandingData['position']);
         $seasonTeamStanding->setPlayedGames($teamStandingData['playedGames']);
         $seasonTeamStanding->setForm($teamStandingData['form']);
