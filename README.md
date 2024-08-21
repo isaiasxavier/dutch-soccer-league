@@ -229,6 +229,8 @@ This Symfony application fetches and stores data from an external API into a rel
 
 - **findByStandings(array $standings): array**  
   Retrieves `SeasonTeamStanding` entities associated with the given list of standings.
+- getTeamStatistics(int $teamId): array Retrieves statistical data for a specific team based on its ID, including
+  position, points, played games, wins, draws, losses, goals for, goals against, and goal difference
 
 ### TeamRepository
 
