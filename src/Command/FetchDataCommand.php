@@ -326,7 +326,7 @@ class FetchDataCommand extends Command
                 
                 if ($standing) {
                     foreach ($standingData['table'] as $teamStandingData) {
-                        $this->saveSeasonTeamStanding($teamStandingData, $standing, $season);
+                        $this->saveSeasonTeamStanding($teamStandingData, $standing);
                     }
                 }
             } catch (Exception $error) {
@@ -342,7 +342,7 @@ class FetchDataCommand extends Command
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    private function saveSeasonTeamStanding($teamStandingData, Standing $standing, Season $season): void
+    private function saveSeasonTeamStanding($teamStandingData, Standing $standing): void
     {
         $teamData = $teamStandingData['team'];
         
