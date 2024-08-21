@@ -46,12 +46,11 @@ class TeamController extends AbstractController
         $players = $this->playerRepository->findPlayerByTeamId($id);
         $pagination = $this->paginationService->getPaginationParameters($request);
         
-        
         $team_id = $team->getId();
         $statistics = $this->seasonTeamStandingRepository->getTeamStatistics($team_id);
 
-        $totalMatches = $this->gameMatchRepository->countMatchesByTeamId($id);
-        $matches = $this->gameMatchRepository->findMatchesByTeamId($id, $pagination['limit'], $pagination['offset']);
+        $totalMatches = $this->gameMatchRepository->countMatchesByTeamId($team_id);
+        $matches = $this->gameMatchRepository->findMatchesByTeamId($team_id, $pagination['limit'], $pagination['offset']);
 
         return $this->render('team/detail.html.twig', [
             'team' => $team,

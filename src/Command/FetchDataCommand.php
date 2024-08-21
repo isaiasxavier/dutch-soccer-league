@@ -39,7 +39,7 @@ class FetchDataCommand extends Command
         parent::__construct();
         $this->apiService = $apiService;
         $this->entityManager = $entityManager;
-        }
+    }
 
     protected function configure(): void
     {
