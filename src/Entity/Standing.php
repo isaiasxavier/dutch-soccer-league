@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\StandingRepository;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: StandingRepository::class)]
@@ -26,13 +25,7 @@ class Standing
     #[ORM\ManyToOne(inversedBy: 'standing')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Season $season = null;
-
-    /**
-     * @var Collection<int, SeasonTeamStanding>
-     */
-    #[ORM\OneToMany(targetEntity: SeasonTeamStanding::class, mappedBy: 'standing')]
-    private Collection $season_team_standing;
-
+    
     public function __construct()
     {
     }

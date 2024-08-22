@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Repository\TeamRepository;
 use DateTimeInterface;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
@@ -43,19 +42,7 @@ class Team
 
     #[ORM\Column(type: 'datetime')]
     private ?DateTimeInterface $lastUpdated = null;
-
-    /**
-     * @var Collection<int, SeasonTeamStanding>
-     */
-    #[ORM\OneToMany(targetEntity: SeasonTeamStanding::class, mappedBy: 'team')]
-    private Collection $season_team_standing;
-
-    /**
-     * @var Collection<int, GameMatch>
-     */
-    #[ORM\OneToMany(targetEntity: GameMatch::class, mappedBy: 'team')]
-    private Collection $gameMatch;
-
+    
     public function __construct()
     {
     }

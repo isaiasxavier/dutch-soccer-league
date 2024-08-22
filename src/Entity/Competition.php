@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\CompetitionRepository;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CompetitionRepository::class)]
@@ -27,12 +26,6 @@ class Competition
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $emblem = null;
-
-    /**
-     * @var Collection<int, Season>
-     */
-    #[ORM\OneToMany(targetEntity: Season::class, mappedBy: 'competition')]
-    private Collection $season;
     
     public function __construct()
     {

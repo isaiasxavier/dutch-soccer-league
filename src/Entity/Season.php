@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Repository\SeasonRepository;
 use DateTimeInterface;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -30,13 +29,7 @@ class Season
     #[ORM\ManyToOne(inversedBy: 'season')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Competition $competition = null;
-
-    /**
-     * @var Collection<int, Standing>
-     */
-    #[ORM\OneToMany(targetEntity: Standing::class, mappedBy: 'season')]
-    private Collection $standing;
-
+    
     public function __construct()
     {
     }
