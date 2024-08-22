@@ -17,20 +17,20 @@
         <nav class="bg-gray-800 text-white p-4">
             <ul class="flex justify-end space-x-4">
                 <li>
-                    <a href="{{ path('app_homepage') }}" class="hover:underline" @click="isOpen = false">
+                    <a href="{{ path('app_homepage') }}" class="hover:underline">
                         Home
                     </a>
                 </li>
                 <li>
                     {% if app.user %}
-                        <a href="{{ path('app_follow') }}" class="hover:underline" @click="isOpen = false">
+                        <a href="{{ path('app_follow') }}" class="hover:underline">
                             Follow
                         </a>
                     {% endif %}
                 </li>
                 <li>
                     {% if app.user %}
-                        <a href="{{ path('app_dashboard') }}" class="hover:underline" @click="isOpen = false">
+                        <a href="{{ path('app_dashboard') }}" class="hover:underline">
                             Dashboard
                         </a>
                     {% endif %}
@@ -42,7 +42,7 @@
                 </li>
                 <li>
                     {% if not app.user %}
-                        <a href="{{ path('app_register') }}" class="hover:underline" @click="isOpen = false">
+                        <a href="{{ path('app_register') }}" class="hover:underline">
                             Register
                         </a>
                     {% endif %}
